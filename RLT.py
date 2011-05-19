@@ -59,6 +59,7 @@ class ResultsGenerator(object):
         override it for generating your own results.
     """
     def get_filename(self):
+        if self.args.file: return self.args.file
         return ('_').join(self.args.hashtag) + "_" + ('_').join(self.args.user)
 
     def process_data(self):
