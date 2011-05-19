@@ -11,6 +11,7 @@ class main(tweetWeightParser, InterchangeableInterface, ResultsGenerator):
         self.parser.add_argument('--user', dest='user', help='user list to search in')
         self.parser.add_argument('--hashtag', dest='hashtag',  help='hashtag list to search in')
         self.parser.add_argument('--destfile', dest='file',  help='hashtag list to search ina')
+        self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word')
         self.args = self.parser.parse_args()
         self.finished=False
         self.exit=False

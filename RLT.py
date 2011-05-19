@@ -16,13 +16,21 @@ class tweetWeightParser(object):
         self.api = twitter.Api()
         self.tweets=[]
 
+    def second_level_find(self,list_,key):
+        for sublist in list_: 
+            return sublist[2] == key
+
     def get_by_timeline_array(self, timelines):
+        filter_=self.args.filter_
         for user in timelines:
             if user is None: return
             for i in self.api.GetUserTimeline(user):
-                if not i.in_reply_to_user_id and not i.text in self.tweets:
+                if not i.in_reply_to_user_id and not self.second_level_find(self.tweets, i.text):
                     if i.retweet_count is not 0 and i.retweet_count is not None:
-                        self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
+                        if not filter_:
+                            self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
+                        elif filter_ in i.text:
+                            self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
             self.tweets=sorted(self.tweets, reverse=True)
 
 
@@ -30,7 +38,7 @@ class tweetWeightParser(object):
         for hashtag in hashtags:
             if not hashtag: return
             for tweet in self.api.GetSearch(term=hashtag, geocode=geocode):
-                if not tweet.text in self.tweets:
+                if not tweet.in_reply_to_user_id and not self.second_level_find(self.tweets, tweet.text):
                     self.tweets.append([tweet.retweet_count, tweet.created_at, tweet.text, tweet.location] )
             self.tweets=sorted(self.tweets, reverse=True)
 
@@ -66,18 +74,15 @@ class ResultsGenerator(object):
         with open(self.get_filename(), 'w') as file:
             file.write(self.tweets.__str__())
         if debug: pprint.PrettyPrinter().pprint(self.tweets)
-        return self.generate_html()
+        return self.write_html()
 
-    def generate_html(self):
+    def write_html(self):
         a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
         for i in [tuple(self.tweets[i:i+2]) for i in xrange(0,len(self.tweets),2)]:
-            if len(i) == 1:
-                sec=""
-                pri=i[0][2]
-            else:
-                pri=i[0][2]
-                sec=i[1][2]
-                a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
+            pri=i[0][2]
+            sec=""
+            if len(i) != 1: sec=i[1][2]
+            a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
         a+="</tbody></table></body>"
 
         with open(self.get_filename() + '.html','w') as page_:
