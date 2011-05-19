@@ -1,8 +1,10 @@
 #!/usr/bin/env python 
 # -*- coding: UTF-8 -*-
 import twitter
+import codecs
 debug=False
 if debug: import pprint
+
 
 """
     Class file for RealTimeTwitter
@@ -85,5 +87,5 @@ class ResultsGenerator(object):
             a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
         a+="</tbody></table></body>"
 
-        with open(self.get_filename() + '.html','w') as page_:
+        with codecs.open(self.get_filename() + '.html','w','utf-8') as page_:
             page_.write(a.encode('ascii','ignore'))

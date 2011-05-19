@@ -12,7 +12,17 @@ git clone https://github.couuuuuOn/RealLifeTwitter.git
 cd RealLifeTwitter/
 python RealLifeTweeter.py --hashtag notenemosmiedo --user tomalaplaza --destfile notenemosmiedo.html --timeout 60
 > Cuando termine, pulsa "f"
-firefox notenemosmiedo_tomalaplaza.html
+firefox notenemosmiedo.html
+ó:
+wkhtmltopdf notenemosmiedo.html notenemosmiedo.pdf
+
+incluso puedes hacer despues un
+print notenemosmiedo.pdf
+
+Dependencias
+=============
+Este software depende de python2.7 (o python2.6 con algunos módulos extra), python-twitter, y un navegador, o wkhtmltopdf (wkhtmltopdf package on debian)
+
 
 Real life twitter
 =================
@@ -27,3 +37,12 @@ cd RealLifeTwitter/
 python RealLifeTweeter.py --hashtag notenemosmiedo --user tomalaplaza --destfile notenemosmiedo.html --timeout 60
 > Then press "f"
 firefox notenemosmiedo_tomalaplaza.html
+or:
+wkhtmltopdf notenemosmiedo.html notenemosmiedo.pdf
+
+you can even execute this after to print it:
+print notenemosmiedo.pdf
+
+Dependencias
+=============
+this software dependes on python2.7 (or python2.6 with some extra modules), python-twitter, and a web browser, or wkhtmltopdf (wkhtmltopdf package on debian)
