@@ -1,0 +1,40 @@
+#!/bin/bash - 
+#===============================================================================
+#
+#          FILE:  ScriptProposal.sh
+# 
+#         USAGE:  ./ScriptProposal.sh 
+# 
+#   DESCRIPTION:  
+# 
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR: YOUR NAME (), 
+#       COMPANY: 
+#       CREATED: 19/05/11 15:29:07 CEST
+#      REVISION:  ---
+#===============================================================================
+
+
+# You need to enable directory listing on your webserver, and add this script to your crontab.
+hashtags=("democraciarealya" "spanishrevolution" "acampadamalaga" "acampadasol" "15M")
+users=("barcelonarealya")
+
+#filter_cmd="--filter filter"
+script=RealLifeTweeter.py
+timeout=60
+file=`mktemp -p.`
+
+for i in "${hashtags[@]}"; do 
+    hash_cmd="$hash_cmd --hashtag $i "
+done
+for i in "${users[@]}"; do 
+    user_cmd="$user_cmd --user $i "
+done
+
+
+python $script --destfile $file $user_cmd $hash_cmd $filter_cmd --timeout $timeout
+wkhtmltopdf $file.html $file.pdf
+mv $file.pdf .
