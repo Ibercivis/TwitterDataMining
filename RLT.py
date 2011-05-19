@@ -1,7 +1,6 @@
 #!/usr/bin/env python 
 # -*- coding: UTF-8 -*-
 import twitter
-import markup
 debug=False
 if debug: import pprint
 
@@ -69,14 +68,16 @@ class ResultsGenerator(object):
         return self.generate_html()
 
     def generate_html(self):
-        page = markup.page()
-        page.init( title="Real life tweeting", css=( 'stickers.css', ))
-        page.div(class_="page")
+        a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
+        for i in [tuple(self.tweets[i:i+2]) for i in xrange(0,len(self.tweets),2)]:
+            if len(i) == 1:
+                sec=""
+                pri=i[0][2]
+            else:
+                pri=i[0][2]
+                sec=i[1][2]
+                a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
+        a+="</tbody></table></body>"
 
-        for i in self.tweets:
-            page.div(class_="sticker")
-            page.p(unicode(i[2]))
-            page.div.close()
-        page.div.close()
         with open(self.get_filename() + '.html','w') as page_:
-            page_.write(page().encode('ascii','ignore'))
+            page_.write(a.encode('ascii','ignore'))
