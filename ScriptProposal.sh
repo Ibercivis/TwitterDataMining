@@ -20,14 +20,14 @@
 
 # You need to enable directory listing on your webserver, and add this script to your crontab.
 hashtags=("democraciarealya" "spanishrevolution" "acampadamalaga" "acampadasol" "15M" "spanishrevolution" )
-users=("barcelonarealya" "democraciarealya" )
+users=("barcelonarealya")
 
 #filter_cmd="--filter filter"
 script=RealLifeTweeter.py
-timeout=1
+timeout=3
 #file=`mktemp -p.`
 
-file="democraciarealya.pdf"
+file="democraciarealya"
 
 for i in "${hashtags[@]}"; do 
     hash_cmd="$hash_cmd --hashtag $i "
