@@ -5,27 +5,29 @@
 # 
 #         USAGE:  ./ScriptProposal.sh 
 # 
-#   DESCRIPTION:  
+#   DESCRIPTION: RealLifeTwitter Oriented to spanish revolution 
 # 
 #       OPTIONS:  ---
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
 #         NOTES:  ---
-#        AUTHOR: YOUR NAME (), 
+#        AUTHOR: David Francos Cuartero (XayOn), 
 #       COMPANY: 
 #       CREATED: 19/05/11 15:29:07 CEST
-#      REVISION:  ---
+#      REVISION:  0.1
 #===============================================================================
 
 
 # You need to enable directory listing on your webserver, and add this script to your crontab.
-hashtags=("democraciarealya" "spanishrevolution" "acampadamalaga" "acampadasol" "15M")
-users=("barcelonarealya")
+hashtags=("democraciarealya" "spanishrevolution" "acampadamalaga" "acampadasol" "15M" "spanishrevolution" )
+users=("barcelonarealya" "democraciarealya" )
 
 #filter_cmd="--filter filter"
 script=RealLifeTweeter.py
-timeout=60
-file=`mktemp -p.`
+timeout=1
+#file=`mktemp -p.`
+
+file="democraciarealya.pdf"
 
 for i in "${hashtags[@]}"; do 
     hash_cmd="$hash_cmd --hashtag $i "
@@ -37,4 +39,3 @@ done
 
 python $script --destfile $file $user_cmd $hash_cmd $filter_cmd --timeout $timeout
 wkhtmltopdf $file.html $file.pdf
-mv $file.pdf .
