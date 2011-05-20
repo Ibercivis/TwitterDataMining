@@ -82,8 +82,10 @@ class ResultsGenerator(object):
         a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
         j=0
         for i in [tuple(self.tweets[i:i+2]) for i in xrange(0,len(self.tweets),2)]:
+            if j == 6: 
+                a+="</tbody></table><table class='sample'><tbody>"
+                j=0
             j=j+1
-            if j == 6: a+="</tbody></table><table class='sample'><tbody>"
             pri=i[0][2]
             sec=""
             if len(i) != 1: sec=i[1][2]

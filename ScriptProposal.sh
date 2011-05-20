@@ -19,12 +19,12 @@
 
 
 # You need to enable directory listing on your webserver, and add this script to your crontab.
-hashtags=("democraciarealya" "spanishrevolution" "acampadamalaga" "acampadasol" "15M" "spanishrevolution" )
+hashtags=("democraciarealya" "spanishrevolution" "acampadamalaga" "acampadasol" "spanishrevolution" )
 users=("barcelonarealya")
 
 #filter_cmd="--filter filter"
 script=RealLifeTweeter.py
-timeout=3
+timeout=1
 #file=`mktemp -p.`
 
 file="democraciarealya"
@@ -38,4 +38,4 @@ done
 
 
 python $script --destfile $file $user_cmd $hash_cmd $filter_cmd --timeout $timeout
-wkhtmltopdf $file.html $file.pdf
+DISPLAY=:0 wkhtmltopdf $file.html $file.pdf
