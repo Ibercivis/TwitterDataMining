@@ -1,0 +1,56 @@
+        <!--
+            This file is free software, under the GNU GPL License 3+
+            Copyright (2011) Alejandro Rivero <put.mail@here.now>
+        -->
+            @page {
+              size: A4;
+                  /*margin: 4.1cm;*/
+              margin-top: 2.1cm;
+              margin-bottom: 2.1cm;
+              margin-left: 0.8cm;
+              margin-right: 0.9cm;
+            }
+
+            body {
+                margin:0px!important;
+             	border-width: 0px!important;
+                padding: 0px!important;
+            }
+
+            html {
+                margin:0px;
+            	border-width: 0px;
+            	padding: 0px;
+            }
+
+            table.sample {
+                page-break-after:always;
+                /*width: 210mm;*/
+                /*height: 297mm;*/
+            	border: 1px solid gray;
+            	border-collapse: separate;
+            	background-color: white;
+            }
+            table.sample td {
+               margin:0px;
+               border-width: 0px;
+               padding: 0px;
+            }
+
+
+            table.sample td {
+               width:97.0mm; 
+                height:42.4mm;
+                margin:0px; /* No soporta esta propiedad */
+            	border-width: 0px;
+            	padding-left: 5mm;
+                padding-right: 4mm;
+                padding-top:10mm;
+                padding-bottom:3mm;
+            	border-style: dotted;
+            	border-color: gray;
+                background-image:url('Plantilla_twitter.JPG');
+                background-size: 100%;
+                background-repeat:no-repeat;
+                background-position:center;
+            }
