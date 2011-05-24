@@ -2,6 +2,9 @@
 # -*- coding: UTF-8 -*-
 import twitter
 import codecs
+import argparse
+import tornado
+import tornado.web
 debug=False
 if debug: import pprint
 
@@ -9,6 +12,17 @@ if debug: import pprint
 """
     Class file for RealTimeTwitter
 """
+
+class ArgumentParser(object):
+    def parse(self):
+        self.parser = argparse.ArgumentParser(description='Search a number of tweets by user\'s timeline or hashtag search, ordered by weight')
+        self.parser.add_argument('--user', dest='user', help='user list to search in')
+        self.parser.add_argument('--hashtag', dest='hashtag',  help='hashtag list to search in')
+        self.parser.add_argument('--server', dest='server',  help='launch server')
+        self.parser.add_argument('--destfile', dest='file',  help='hashtag list to search ina')
+        self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word')
+        self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds')
+        self.args = self.parser.parse_args()
 
 class tweetWeightParser(object):
     """
