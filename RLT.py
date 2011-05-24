@@ -84,7 +84,10 @@ class ResultsGenerator(object):
     """
     def get_filename(self):
         if self.args.file: return self.args.file
-        return ('_').join(self.args.hashtag) + "_" + ('_').join(self.args.user)
+        try:
+            return ('_').join(self.args.hashtag) + "_" + ('_').join(self.args.user)
+        except:
+            return "Undefined"
 
     def process_data(self):
         with open(self.get_filename(), 'w') as file:
@@ -93,7 +96,7 @@ class ResultsGenerator(object):
         return self.write_html()
 
     def write_html(self):
-        a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
+        a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"Style/stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
         j=0
         for i in [tuple(self.tweets[i:i+2]) for i in xrange(0,len(self.tweets),2)]:
             if j == 6: 
