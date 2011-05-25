@@ -10,7 +10,7 @@ if debug: import pprint
 
 
 """
-    Class file for RealTimeTwitter
+    Class file for TwitterAnalizer got from RealTimeTwitter.
 """
 
 class ArgumentParser(object):
@@ -22,11 +22,14 @@ class ArgumentParser(object):
         self.parser.add_argument('--destfile', dest='file',  help='hashtag list to search ina')
         self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word')
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds')
+        self.parser.add_argument('--since_id', dest='since_id',  help='Get tweets from this id on.')
+        self.parser.add_argument('--max_tweets', dest='count',  help='Get COUNT Tweets.')
         self.args = self.parser.parse_args()
 
 class tweetWeightParser(object):
     """
         Gets tweets, filters them and orders them by weight
+        Note: for analizer it currently not parses weight...
     """
     def __init__(self):
         self.api = twitter.Api()
@@ -38,9 +41,17 @@ class tweetWeightParser(object):
 
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_
+
         for user in timelines:
             if user is None: return
-            for i in self.api.GetUserTimeline(user):
+            options={
+                'screen_name': user,
+                'since_id': self.args.since_id,
+                'count': self.args.count,
+
+            }
+            print "Getting tweets for user"
+            for i in self.api.GetUserTimeline(**options): # TODO Fill options.
                 if not i.in_reply_to_user_id and not self.second_level_find(self.tweets, i.text):
                     if i.retweet_count is not 0 and i.retweet_count is not None:
                         if not filter_:

@@ -37,15 +37,23 @@ class main(tweetWeightParser, InterchangeableInterface, ResultsGenerator, Argume
             """
                 TODO: Implement limits as twitter limits it!!!!
             """
+            global args
             try:
                 args.hashtag=self.get_argument('hashtags').split(',')
-                args.users=self.get_argument('usernames').split(',')
+            except:
+                pass
+            try:
+                args.user=self.get_argument('usernames').split(',')
             except:
                 pass
 
-            if args.hashtag:
+            if args.hashtag or args.users:
                 args.timeout=False
+                a.args=args
+                a.tweets=[]
+                a.finished=False
                 self.write(a.loop(True))
+                return
 
             self.render('Templates/Starting', args=args)
 
