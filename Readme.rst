@@ -18,6 +18,8 @@ wkhtmltopdf notenemosmiedo.html notenemosmiedo.pdf
 
 incluso puedes hacer despues un
 print notenemosmiedo.pdf
+a partir de la última version puedes iniciar un servidor web desde el que satisfacer las peticiones, con:
+python RealLifeTwitter --server True
 
 Dependencias
 =============

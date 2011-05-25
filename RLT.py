@@ -89,14 +89,16 @@ class ResultsGenerator(object):
         except:
             return "Undefined"
 
-    def process_data(self):
+    def process_data(self, stat=False):
+        if stat:
+            return self.write_html(stat)
         with open(self.get_filename(), 'w') as file:
             file.write(self.tweets.__str__())
         if debug: pprint.PrettyPrinter().pprint(self.tweets)
         return self.write_html()
 
-    def write_html(self):
-        a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"Style/stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
+    def write_html(self, stat=False):
+        a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"static/stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
         j=0
         for i in [tuple(self.tweets[i:i+2]) for i in xrange(0,len(self.tweets),2)]:
             if j == 6: 
@@ -109,5 +111,7 @@ class ResultsGenerator(object):
             a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
         a+="</tbody></table></body>"
 
+        if stat:
+            return a
         with codecs.open(self.get_filename() + '.html','w','utf-8') as page_:
             page_.write(a.encode('ascii','ignore'))

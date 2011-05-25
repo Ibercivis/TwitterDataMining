@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 from RLT import *
 import time
-
+import os
 class main(tweetWeightParser, InterchangeableInterface, ResultsGenerator, ArgumentParser):
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -10,11 +10,13 @@ class main(tweetWeightParser, InterchangeableInterface, ResultsGenerator, Argume
         self.exit=False
         self.start_time=time.time()
         self.parse()
+        global args
+        args=self.args
 
         if not type(self.args.hashtag) is list: self.args.hashtag=[self.args.hashtag]
         if not type(self.args.user) is list: self.args.user=[self.args.user]
 
-    def loop(self):
+    def loop(self, html=False):
         while not self.finished:
             if not self.args.timeout:
                 self.get_by_hashtag(self.args.hashtag)
@@ -28,27 +30,33 @@ class main(tweetWeightParser, InterchangeableInterface, ResultsGenerator, Argume
                 self.get_by_timeline_array(self.args.user)
                 time.sleep(10)
         if self.exit: return
-        self.process_data()
+        return self.process_data(html)
 
     class RequestHandler(tornado.web.RequestHandler):
         def get(self, slug=False):
             """
                 TODO: Implement limits as twitter limits it!!!!
             """
-            print "Rendering slug %s" %slug
-            self.args.hashtag=self.get_argument('hashtags').split(',')
-            self.args.users=self.get_argument('usernames').split(',')
-            self.args.timeout=False
-            self.loop()
-            if not slug: slug="Starting"
-            self.render('Templates/%s' %(slug), slug=slug, users=self.args.users, hashtags=self.args.hashtags )
+            try:
+                args.hashtag=self.get_argument('hashtags').split(',')
+                args.users=self.get_argument('usernames').split(',')
+            except:
+                pass
+
+            if args.hashtag:
+                args.timeout=False
+                self.write(a.loop(True))
+
+            self.render('Templates/Starting', args=args)
 
 if __name__ == "__main__":
+    global a
     a=main()
     if a.args.server:
-        urls=[("/view/([^/]+)", a.RequestHandler)]
+        urls=[("/", a.RequestHandler)]
         print "Rendering urls for %s" %urls
-        application = tornado.web.Application(urls)
+        settings={ "static_path": os.path.join(os.path.dirname(__file__), "static"), }
+        application = tornado.web.Application(urls, **settings)
         application.listen(8080)
         tornado.ioloop.IOLoop.instance().start()
     else:
