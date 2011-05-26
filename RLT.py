@@ -5,6 +5,7 @@ import codecs
 import argparse
 import tornado
 import tornado.web
+import json
 debug=False
 if debug: import pprint
 
@@ -24,6 +25,7 @@ class ArgumentParser(object):
         self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word')
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds')
         self.parser.add_argument('--since_id', dest='since_id',  help='Get tweets from this id on.')
+        self.parser.add_argument('--read_file', dest='read_file',  help='Get tweets from this file in json format.')
         self.parser.add_argument('--get_json', dest='get_json',  help='Return json instead of html')
         self.parser.add_argument('--max_tweets', dest='count',  help='Get COUNT Tweets.')
         self.args = self.parser.parse_args()
@@ -35,6 +37,7 @@ class twitterParser(object):
     """
     def __init__(self):
         self.api = twitter.Api()
+        self.users=[]
         self.tweets=[]
 
     def second_level_find(self,list_,key):
@@ -48,7 +51,7 @@ class twitterParser(object):
 
     def get_by_file(self, file_):
         with open(file_) as f:
-            json.loads(f)
+            json.loads(f.read())
 
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_
@@ -134,7 +137,9 @@ class ResultsGenerator(object):
         a+="</tbody></table></body>"
 
         if self.args.get_json:
-            return json.dumps(self.tweets)
+            b=[ c.__str__() for c in self.users ]
+            return json.dumps(self.tweets) + ''.join(b)
+
         if stat:
             return a
 

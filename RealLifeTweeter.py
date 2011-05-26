@@ -19,10 +19,14 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
     def loop(self, html=False):
         while not self.finished:
             if not self.args.timeout:
-                self.get_by_hashtag(self.args.hashtag)
-                self.get_by_timeline_array(self.args.user)
+                if self.args.hashtag:
+                    self.get_by_hashtag(self.args.hashtag)
+                if self.args.user:
+                    self.get_by_timeline_array(self.args.user)
                 if self.args.get_user_info:
                     self.get_user_info(self.args.user)
+                if self.args.read_file:
+                    self.get_by_file(self.args.read_file)
                 self.finished=True
             elif ( time.time() - self.start_time ) > int(self.args.timeout):
                 break
@@ -53,6 +57,7 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
                 args.timeout=False
                 a.args=args
                 a.tweets=[]
+                a.users=[]
                 a.finished=False
                 self.write(a.loop(True))
                 return
