@@ -26,6 +26,7 @@ class ArgumentParser(object):
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds')
         self.parser.add_argument('--since_id', dest='since_id',  help='Get tweets from this id on.')
         self.parser.add_argument('--read_file', dest='read_file',  help='Get tweets from this file in json format.')
+        self.parser.add_argument('--dont_parse_weight', dest='dont_parse_weight',  help='Dont bother about tweet\'s weight. AKA let not-retweeted in right now.')
         self.parser.add_argument('--get_json', dest='get_json',  help='Return json instead of html')
         self.parser.add_argument('--max_tweets', dest='count',  help='Get COUNT Tweets.')
         self.args = self.parser.parse_args()
@@ -36,7 +37,7 @@ class twitterParser(object):
         Note: for analizer it currently not parses weight...
     """
     def __init__(self):
-        self.api = twitter.Api()
+        self.api=twitter.Api()
         self.users=[]
         self.tweets=[]
 
@@ -47,7 +48,8 @@ class twitterParser(object):
     def get_user_info(self, users):
         for user in users:
             if user is None: return
-            self.users.append(self.api.GetUser(user))
+            print "getting user %s" %user
+            self.users.append([self.api.GetUser(user), self.api.GetFriends(user), self.api.GetFollowers(user) ])
 
     def get_by_file(self, file_):
         with open(file_) as f:
@@ -64,14 +66,26 @@ class twitterParser(object):
                 'count': self.args.count,
             }
             print "Getting tweets for user"
-            for i in self.api.GetUserTimeline(**options): # TODO Fill options.
-                if not i.in_reply_to_user_id and not self.second_level_find(self.tweets, i.text):
-                    if i.retweet_count is not 0 and i.retweet_count is not None:
-                        if not filter_:
-                            self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
-                        elif filter_ in i.text:
-                            self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
-            self.tweets=sorted(self.tweets, reverse=True)
+            try:
+                for i in self.api.GetUserTimeline(**options): # TODO Fill options.
+                    if self.args.dont_parse_weight:
+                        if not self.second_level_find(self.tweets, i.text):
+                            if not filter_:
+                                self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
+                            elif filter_ in i.text:
+                                self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
+                    else:
+                        if not i.in_reply_to_user_id and not self.second_level_find(self.tweets, i.text):
+                            if i.retweet_count is not 0 and i.retweet_count is not None:
+                                if not filter_:
+                                    self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
+                                elif filter_ in i.text:
+                                    self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
+                self.tweets=sorted(self.tweets, reverse=True)
+            except Exception, e:
+                self.tweets.append(('Twitter Error','Twitter Error',e))
+                self.tweets.append(('Twitter Error','Twitter Error',e))
+                
 
 
     def get_by_hashtag(self, hashtags, geocode=None):
@@ -124,6 +138,8 @@ class ResultsGenerator(object):
 
     def write_html(self, stat=False):
         a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"static/stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
+        if self.second_level_find(self.tweets, 'Twitter Error'):
+            return  "%s %s" %(a, "An error ocurred, try again later: %s" %self.tweets.__str__())
         j=0
         for i in [tuple(self.tweets[i:i+2]) for i in xrange(0,len(self.tweets),2)]:
             if j == 6: 
@@ -136,9 +152,10 @@ class ResultsGenerator(object):
             a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
         a+="</tbody></table></body>"
 
-        if self.args.get_json:
-            b=[ c.__str__() for c in self.users ]
-            return json.dumps(self.tweets) + ''.join(b)
+        if self.args.get_json or self.args.get_user_info:
+            b=[ c.AsDict() for c in self.users ]
+            b.append(self.tweets)
+            return json.dumps(b)
 
         if stat:
             return a
