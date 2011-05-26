@@ -53,12 +53,12 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
     class RequestHandler(tornado.web.RequestHandler):
         def get(self, slug=False):
             """
-                TODO: Implement limits as twitter limits it!!!!
+                TODO: Implement OAUTH
             """
             global args
 
             try:
-                args.auth=self.get_argument('auth')
+                if not args.auth: args.auth=self.get_argument('auth')
                 if args.auth:
                     a.auth=args.auth.split(',') 
                     a.api = twitter.Api(consumer_secret=self.auth[0], access_token_key=self.auth[1], access_token_secret=self.auth[2])
@@ -66,32 +66,34 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
                 print "Ey, could not auth myself!"
                 pass
 
-
             try:
-                args.hashtag=self.get_argument('hashtags').split(',')
+                if not args.get_user_info: args.get_user_info=self.get_argument('get_user_info').split(',')
+            except:
+                pass
+            
+            try:
+                if not args.hashtag: args.hashtag=self.get_argument('hashtags').split(',')
             except:
                 pass
             try:
-                args.user=self.get_argument('usernames').split(',')
+                if not args.user: args.user=self.get_argument('usernames').split(',')
             except:
                 pass
 
-            if args.hashtag or args.users:
+            if args.hashtag or args.users and slug:
                 args.timeout=False
                 a.args=args
                 a.tweets=[]
                 a.users=[]
                 a.finished=False
-                self.write(a.loop(True))
-                return
-
-            self.render('Templates/Starting', args=args)
+                return self.render('Templates/%s' %slug, content=a.loop(True))
+             return self.render('Templates/MainPage')
 
 if __name__ == "__main__":
     global a
     a=main()
     if a.args.server:
-        urls=[("/", a.RequestHandler)]
+        urls=[("/()", a.RequestHandler)] # TODO FIX THAT FUCKING URL.
         print "Rendering urls for %s" %urls
         settings={ "static_path": os.path.join(os.path.dirname(__file__), "static"), }
         application = tornado.web.Application(urls, **settings)

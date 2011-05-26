@@ -12,6 +12,13 @@ if debug: import pprint
 
 """
     Class file for TwitterAnalizer got from RealTimeTwitter.
+    TODO Things:
+        Make nice web interfaces.
+        Allow it to connect with twitter (in progress)
+        To make a bunch of online IDs to stickers
+            Get user lists
+            Get followers
+            Get followings.
 """
 
 class ArgumentParser(object):
@@ -85,8 +92,6 @@ class twitterParser(object):
             except Exception, e:
                 self.tweets.append(('Twitter Error','Twitter Error',e))
                 self.tweets.append(('Twitter Error','Twitter Error',e))
-                
-
 
     def get_by_hashtag(self, hashtags, geocode=None):
         for hashtag in hashtags:
