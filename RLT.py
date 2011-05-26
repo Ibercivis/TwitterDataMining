@@ -40,6 +40,10 @@ class tweetWeightParser(object):
         for sublist in list_: 
             return sublist[2] == key
 
+    def get_by_file(self, file_):
+        with open(file_) as f:
+            json.loads(f)
+
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_
 
@@ -49,7 +53,6 @@ class tweetWeightParser(object):
                 'screen_name': user,
                 'since_id': self.args.since_id,
                 'count': self.args.count,
-
             }
             print "Getting tweets for user"
             for i in self.api.GetUserTimeline(**options): # TODO Fill options.
@@ -124,7 +127,7 @@ class ResultsGenerator(object):
         a+="</tbody></table></body>"
 
         if self.args.get_json:
-            return self.tweets.__str__()
+            return json.dumps(self.tweets)
         if stat:
             return a
 
