@@ -23,6 +23,7 @@ class ArgumentParser(object):
         self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word')
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds')
         self.parser.add_argument('--since_id', dest='since_id',  help='Get tweets from this id on.')
+        self.parser.add_argument('--get_json', dest='get_json',  help='Return json instead of html')
         self.parser.add_argument('--max_tweets', dest='count',  help='Get COUNT Tweets.')
         self.args = self.parser.parse_args()
 
@@ -106,7 +107,7 @@ class ResultsGenerator(object):
         with open(self.get_filename(), 'w') as file:
             file.write(self.tweets.__str__())
         if debug: pprint.PrettyPrinter().pprint(self.tweets)
-        return self.write_html()
+        return self.write_html(stat)
 
     def write_html(self, stat=False):
         a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"static/stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
@@ -122,7 +123,10 @@ class ResultsGenerator(object):
             a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
         a+="</tbody></table></body>"
 
+        if self.args.get_json:
+            return self.tweets.__str__()
         if stat:
             return a
+
         with codecs.open(self.get_filename() + '.html','w','utf-8') as page_:
             page_.write(a.encode('ascii','ignore'))
