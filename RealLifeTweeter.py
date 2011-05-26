@@ -3,7 +3,7 @@
 from RLT import *
 import time
 import os
-class main(tweetWeightParser, InterchangeableInterface, ResultsGenerator, ArgumentParser):
+class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentParser):
     def __init__(self):
         super(self.__class__, self).__init__()
         self.finished=False
@@ -21,6 +21,8 @@ class main(tweetWeightParser, InterchangeableInterface, ResultsGenerator, Argume
             if not self.args.timeout:
                 self.get_by_hashtag(self.args.hashtag)
                 self.get_by_timeline_array(self.args.user)
+                if self.args.get_user_info:
+                    self.get_user_info(self.args.user)
                 self.finished=True
             elif ( time.time() - self.start_time ) > int(self.args.timeout):
                 break

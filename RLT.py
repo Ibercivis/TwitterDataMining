@@ -18,6 +18,7 @@ class ArgumentParser(object):
         self.parser = argparse.ArgumentParser(description='Search a number of tweets by user\'s timeline or hashtag search, ordered by weight')
         self.parser.add_argument('--user', dest='user', help='user list to search in')
         self.parser.add_argument('--hashtag', dest='hashtag',  help='hashtag list to search in')
+        self.parser.add_argument('--user_info', dest='get_user_info',  help='return user info instead of tweets')
         self.parser.add_argument('--server', dest='server',  help='launch server')
         self.parser.add_argument('--destfile', dest='file',  help='hashtag list to search ina')
         self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word')
@@ -26,7 +27,7 @@ class ArgumentParser(object):
         self.parser.add_argument('--max_tweets', dest='count',  help='Get COUNT Tweets.')
         self.args = self.parser.parse_args()
 
-class tweetWeightParser(object):
+class twitterParser(object):
     """
         Gets tweets, filters them and orders them by weight
         Note: for analizer it currently not parses weight...
@@ -38,6 +39,11 @@ class tweetWeightParser(object):
     def second_level_find(self,list_,key):
         for sublist in list_: 
             return sublist[2] == key
+
+    def get_user_info(self, users):
+        for user in users:
+            if user is None: return
+            self.users.append(self.api.GetUser(user))
 
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_
@@ -68,6 +74,7 @@ class tweetWeightParser(object):
                 if not tweet.in_reply_to_user_id and not self.second_level_find(self.tweets, tweet.text):
                     self.tweets.append([tweet.retweet_count, tweet.created_at, tweet.text, tweet.location] )
             self.tweets=sorted(self.tweets, reverse=True)
+
 
 class InterchangeableInterface(object):
     """
