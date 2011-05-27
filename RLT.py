@@ -73,7 +73,6 @@ class twitterParser(object):
                 'since_id': self.args.since_id,
                 'count': self.args.count,
             }
-            print "Getting tweets for user"
             try:
                 for i in self.api.GetUserTimeline(**options): # TODO Fill options.
                     if self.args.dont_parse_weight:
@@ -145,11 +144,11 @@ class ResultsGenerator(object):
     def get_table(self, table="tweets"):
         j=0
         a=""
+        print table
         if table is "tweets":
             object_=self.tweets
         else:
             object_=self.users
-
         if self.second_level_find(self.tweets, 'Twitter Error'):
             return  "%s %s" %(a, "An error ocurred, try again later: %s" %self.tweets.__str__())
 

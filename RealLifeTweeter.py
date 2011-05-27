@@ -27,17 +27,18 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
         if not type(self.args.hashtag) is list: self.args.hashtag=[self.args.hashtag]
         if not type(self.args.user) is list: self.args.user=[self.args.user]
 
-    def loop(self, html=False, table=False):
+    def loop(self, html=False, table="tweets"):
         while not self.finished:
-            if not self.args.timeout:
-                if self.args.hashtag and not self.args.get_user_info:
-                    self.get_by_hashtag(self.args.hashtag)
-                if self.args.user and not self.args.get_user_info:
-                    self.get_by_timeline_array(self.args.user)
-                if self.args.get_user_info:
+            if not args.timeout:
+                print args.get_user_info
+                if "True" in args.get_user_info :
                     table="Users"
-                    self.get_user_info(self.args.user)
-                if self.args.read_file:
+                    self.get_user_info(args.user)
+                elif args.user and not args.get_user_info is "True":
+                    self.get_by_timeline_array(args.user)
+                if args.hashtag and not args.get_user_info is "True":
+                    self.get_by_hashtag(args.hashtag)
+                if args.read_file:
                     self.get_by_file(self.args.read_file)
 
                 self.finished=True
@@ -45,9 +46,9 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
                 break
             else:
                 self.get_by_hashtag(self.args.hashtag)
-                time.sleep(10)
+                time.sleep(30)
                 self.get_by_timeline_array(self.args.user)
-                time.sleep(10)
+                time.sleep(30)
         if self.exit: return
         return self.process_data(html, table)
 
@@ -71,14 +72,15 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
 
             try:
                 if not args.get_user_info: args.get_user_info=self.get_argument('get_user_info')
+            except Exception, e:
+                print e
+                pass
+            try:
+                if len(args.hashtag) > 0: args.hashtag=self.get_argument('hashtags').split(',')
             except:
                 pass
             try:
-                if not args.hashtag: args.hashtag=self.get_argument('hashtags').split(',')
-            except:
-                pass
-            try:
-                if not args.user: args.user=self.get_argument('usernames').split(',')
+                if len(args.user) > 0: args.user=self.get_argument('usernames').split(',')
             except:
                 pass
 
@@ -100,7 +102,6 @@ if __name__ == "__main__":
                 ("/([^/]+)", a.RequestHandler),
                 ("/", a.RequestHandler)
                 ] 
-        print "Rendering urls for %s" %urls
         settings={ "static_path": os.path.join(os.path.dirname(__file__), "static"), }
         application = tornado.web.Application(urls, **settings)
         application.listen(8080)
