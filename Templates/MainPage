@@ -1,0 +1,15 @@
+{%extends base.html%}
+{%block content %}
+
+<form action="/Users">
+  <input name="usernames" placeholder="Show users info (comma separated)">
+  <input type="submit" value="Search">
+</form>
+<form action="/Tweets">
+  <input name="hashtags" placeholder="Show hashtags tweets (comma separated)">
+  <input name="usernames" placeholder="Show users tweets (comma separated)">
+  <input type="submit" value="Search">
+</form>
+
+{%end%}
+
