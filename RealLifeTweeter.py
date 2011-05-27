@@ -22,13 +22,12 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
         self.exit=False
         self.start_time=time.time()
         self.parse()
-
         args=self.args
 
         if not type(self.args.hashtag) is list: self.args.hashtag=[self.args.hashtag]
         if not type(self.args.user) is list: self.args.user=[self.args.user]
 
-    def loop(self, html=False):
+    def loop(self, html=False, table=False):
         while not self.finished:
             if not self.args.timeout:
                 if self.args.hashtag and not self.args.get_user_info:
@@ -36,9 +35,11 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
                 if self.args.user and not self.args.get_user_info:
                     self.get_by_timeline_array(self.args.user)
                 if self.args.get_user_info:
+                    table="Users"
                     self.get_user_info(self.args.user)
                 if self.args.read_file:
                     self.get_by_file(self.args.read_file)
+
                 self.finished=True
             elif ( time.time() - self.start_time ) > int(self.args.timeout):
                 break
@@ -48,29 +49,30 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
                 self.get_by_timeline_array(self.args.user)
                 time.sleep(10)
         if self.exit: return
-        return self.process_data(html)
+        return self.process_data(html, table)
 
     class RequestHandler(tornado.web.RequestHandler):
-        def get(self, slug=False):
+        def get(self, slug="MainPage"):
             """
                 TODO: Implement OAUTH
             """
             global args
+            content=""
 
             try:
-                if not args.auth: args.auth=self.get_argument('auth')
-                if args.auth:
+                if not args.auth: 
+                    args.auth=self.get_argument('auth')
+                else:
                     a.auth=args.auth.split(',') 
-                    a.api = twitter.Api(consumer_secret=self.auth[0], access_token_key=self.auth[1], access_token_secret=self.auth[2])
-            except:
-                print "Ey, could not auth myself!"
+                    a.api = twitter.Api(consumer_secret=a.auth[0], access_token_key=a.auth[1], access_token_secret=a.auth[2])
+            except Exception, e:
+                print "Ey, could not auth myself! %s" %e
                 pass
 
             try:
-                if not args.get_user_info: args.get_user_info=self.get_argument('get_user_info').split(',')
+                if not args.get_user_info: args.get_user_info=self.get_argument('get_user_info')
             except:
                 pass
-            
             try:
                 if not args.hashtag: args.hashtag=self.get_argument('hashtags').split(',')
             except:
@@ -80,20 +82,24 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
             except:
                 pass
 
-            if args.hashtag or args.users and slug:
+            if args.hashtag or args.get_user_info or args.users:
                 args.timeout=False
                 a.args=args
                 a.tweets=[]
                 a.users=[]
                 a.finished=False
-                return self.render('Templates/%s' %slug, content=a.loop(True))
-             return self.render('Templates/MainPage')
+                if slug is not "MainPage":
+                    content=a.loop(True)
+            return self.render('Templates/%s' %slug, content=content)
 
 if __name__ == "__main__":
     global a
     a=main()
     if a.args.server:
-        urls=[("/()", a.RequestHandler)] # TODO FIX THAT FUCKING URL.
+        urls=[
+                ("/([^/]+)", a.RequestHandler),
+                ("/", a.RequestHandler)
+                ] 
         print "Rendering urls for %s" %urls
         settings={ "static_path": os.path.join(os.path.dirname(__file__), "static"), }
         application = tornado.web.Application(urls, **settings)

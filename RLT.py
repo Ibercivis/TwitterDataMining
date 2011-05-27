@@ -32,6 +32,7 @@ class ArgumentParser(object):
         self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word')
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds')
         self.parser.add_argument('--since_id', dest='since_id',  help='Get tweets from this id on.')
+        self.parser.add_argument('--auth', dest='auth',  help='Autentication credentials to use')
         self.parser.add_argument('--read_file', dest='read_file',  help='Get tweets from this file in json format.')
         self.parser.add_argument('--dont_parse_weight', dest='dont_parse_weight',  help='Dont bother about tweet\'s weight. AKA let not-retweeted in right now.')
         self.parser.add_argument('--get_json', dest='get_json',  help='Return json instead of html')
@@ -133,20 +134,26 @@ class ResultsGenerator(object):
         except:
             return "Undefined"
 
-    def process_data(self, stat=False):
+    def process_data(self, stat=False, table="tweets"):
         if stat:
-            return self.write_html(stat)
+            return self.write_html(stat, table)
         with open(self.get_filename(), 'w') as file:
             file.write(self.tweets.__str__())
         if debug: pprint.PrettyPrinter().pprint(self.tweets)
         return self.write_html(stat)
 
-    def write_html(self, stat=False):
-        a="<html><head><title>Real life tweeting</title><link media=\"all\" href=\"static/stickers.css\" type=\"text/css\" rel=\"stylesheet\" /></head><body><table class='sample'><tbody>"
+    def get_table(self, table="tweets"):
+        j=0
+        a=""
+        if table is "tweets":
+            object_=self.tweets
+        else:
+            object_=self.users
+
         if self.second_level_find(self.tweets, 'Twitter Error'):
             return  "%s %s" %(a, "An error ocurred, try again later: %s" %self.tweets.__str__())
-        j=0
-        for i in [tuple(self.tweets[i:i+2]) for i in xrange(0,len(self.tweets),2)]:
+
+        for i in [tuple(object_[i:i+2]) for i in xrange(0,len(object_),2)]:
             if j == 6: 
                 a+="</tbody></table><table class='sample'><tbody>"
                 j=0
@@ -155,12 +162,15 @@ class ResultsGenerator(object):
             sec=""
             if len(i) != 1: sec=i[1][2]
             a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
-        a+="</tbody></table></body>"
+        return a
 
+    def write_html(self, stat=False, table="tweets"):
         if self.args.get_json or self.args.get_user_info:
             b=[ c.AsDict() for c in self.users ]
             b.append(self.tweets)
             return json.dumps(b)
+
+        a="<table class='sample'><tbody>%s</tbody></table>" %(self.get_table(table))
 
         if stat:
             return a
