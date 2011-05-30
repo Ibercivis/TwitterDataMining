@@ -52,15 +52,19 @@ class ResultsGenerator(object):
 
         a="<table class='sample'><tbody>%s</tbody></table>" %(self.get_table(table))
 
-        if stat:
-            return a
-
         with codecs.open(self.get_filename() + '.html','w','utf-8') as page_:
             page_.write(a.encode('ascii','ignore'))
 
         if self.args.sqlite:
             c=sqlite3.connect(self.get_filename() + '.sqlite3').cursor()
             if self.args.get_user_info:
-                c.execute('Create table users if not exists (name text, followers text, following text) ')
+                c.execute('Create table users if not exists (name text, followers text, following text, geocode text) ')
                 for user in self.users:
-                    c.execute('Insert into users (%s,%s,%s)' %(user.name, user.followers, user.following)) # FIXME
+                    c.execute('Insert into users (%s,%s,%s,%s)' %(user.name, user.followers, user.following, user.geocode)) # FIXME TODO
+
+            if len(self.args.tweets) > 0:
+                c.execute('Create table tweets if not exists (user text, text text, date text) ')
+                for tweet in self.tweets:
+                    c.execute('Insert into tweets (%s,%s,%s,%s)' %(tweet[1], tweet[2], tweet[3]))
+        if stat:
+            return a

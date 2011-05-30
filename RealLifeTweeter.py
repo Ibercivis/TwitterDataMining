@@ -66,13 +66,16 @@ class main(Interface, ResultsGenerator, twitterParser):
                 if not args.auth: 
                     args.auth=self.get_argument('auth')
                 else:
-                    a.auth=args.auth.split(',') 
-                    a.api = twitter.Api(consumer_secret=a.auth[0], access_token_key=a.auth[1], access_token_secret=a.auth[2])
-            except Exception:
+                    a.auth=args.auth.split(',')
+                    try:
+                        a.api = twitter.Api(consumer_secret=a.auth[0], access_token_key=a.auth[1], access_token_secret=a.auth[2])
+                    except:
+                        a.api=twitter.Api()
+            except:
                 pass
             try:
                 if not args.get_user_info: args.get_user_info=self.get_argument('get_user_info')
-            except Exception, e:
+            except:
                 pass
             try:
                 if len(args.hashtag) > 0: args.hashtag=self.get_argument('hashtags').split(',')
@@ -83,25 +86,32 @@ class main(Interface, ResultsGenerator, twitterParser):
             except:
                 pass
 
-            if args.hashtag or args.get_user_info or args.users:
-                args.timeout=False
-                a.args=args
-                a.tweets=[]
-                a.users=[]
-                a.finished=False
-                if slug is not "MainPage":
-                    content=a.loop(True)
             try:
                 a.pin=self.get_argument('pin')
+                pin_got_from_arg=True
             except:
                 self.pin=False
+
             try:
-                content=a.auth_url
+                if not a.pin:
+                    content=a.auth_url
             except:
                 pass
+
+
             a.getpin()
             if not a.pin:
                slug="auth"
+
+            if args.hashtag or args.get_user_info or args.users:
+                if a.pin:
+                    args.timeout=False
+                    a.args=args
+                    a.tweets=[]
+                    a.users=[]
+                    a.finished=False
+                    if slug is not "MainPage":
+                        content=a.loop(True)
 
             return self.render('Templates/%s' %slug, title=args.title, content=content)
 

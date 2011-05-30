@@ -21,6 +21,7 @@ class CLIArgumentParser(object):
         self.parser.add_argument('--server', dest='server',  action="store_true", help='launch server', default=False)
         self.parser.add_argument('--title', default="Real Life twitter", dest='title',  help='specify title')
         self.parser.add_argument('--destfile', dest='file',  help='hashtag list to search ina', default=False)
+        self.parser.add_argument('--enable_sqlite', dest='sqlite',  help='Save data in sqlite database. Requires destfile', default=False)
         self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word', default=False)
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds', default=False)
         self.parser.add_argument('--since_id', dest='since_id',  help='Get tweets from this id on.', default=False)

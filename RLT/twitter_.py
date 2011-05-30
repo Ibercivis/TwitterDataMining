@@ -13,10 +13,10 @@ except:
 
 import pprint
 
-AUTHORIZATION_URL = 'http://twitter.com/oauth/authorize'
-SIGNIN_URL = 'http://twitter.com/oauth/authenticate'
+AUTHORIZATION_URL = 'http://twitter.com/oauth/authorize'     
+SIGNIN_URL        = 'http://twitter.com/oauth/authenticate'  
 REQUEST_TOKEN_URL = 'https://twitter.com/oauth/request_token'
-ACCESS_TOKEN_URL = 'https://twitter.com/oauth/access_token'
+ACCESS_TOKEN_URL  = 'https://twitter.com/oauth/access_token' 
 
 class OAuthApi(Api):
     "OAuthApi code from http://oauth-python-twitter.googlecode.com"
@@ -214,13 +214,13 @@ class twitterParser(object):
         self.tweets=[]
 
     def getpin(self):
-        # FIXME Make user launch URL
-        # This is hard, as we've got to deceide if via web or locally...
-        # And then get results acording to one thing or another...
-        # What about to store it in a cookie/file??
         if self.pin:
-            self.api = OAuthApi(self.CONSUMERKEY, self.CONSUMERSECRET, self.request_token)
-            self.accesstoken = self.api.getAccessToken(self.pin)
+            try:
+                self.api = OAuthApi(self.CONSUMERKEY, self.CONSUMERSECRET, self.request_token)
+                self.accesstoken = self.api.getAccessToken(self.pin)
+            except:
+                self.api = OAuthApi(self.CONSUMERKEY, self.CONSUMERSECRET)
+        return  self.accesstoken
 
     def second_level_find(self,list_,key):
         for sublist in list_: 
@@ -263,8 +263,7 @@ class twitterParser(object):
                                     self.tweets.append([ i.retweet_count, i.created_at, i.text , i.location])
                 self.tweets=sorted(self.tweets, reverse=True)
             except Exception, e:
-                self.tweets.append(('Twitter Error','Twitter Error',e))
-                self.tweets.append(('Twitter Error','Twitter Error',e))
+                print e
 
     def get_by_hashtag(self, hashtags, geocode=None):
         for hashtag in hashtags:
