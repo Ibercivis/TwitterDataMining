@@ -5,12 +5,7 @@
 <script type="text/javascript" src="static/js/jquery.jqtransform.js"></script>
 <link rel="stylesheet" href="static/jqtransform.css" />
 <script>
-$('#tabs').bind('tabsselect', function(event, ui) {
-    ui.tab     // anchor element of the selected (clicked) tab
-    ui.panel   // element, that contains the selected/clicked tab contents
-    ui.index   // zero-based index of the selected (clicked) tab
-
-});
+$('#tabs').tabs();
 $("form.jqtransform").jqTransform();
 
 </script>
