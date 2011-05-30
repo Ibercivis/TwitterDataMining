@@ -1,0 +1,8 @@
+{% extends base.html %}
+
+{% block content %}
+<form action="#">
+    <a href="{{ content }}"> Click here to auth with twitter </a>
+    <label for="text">Enter pin</label><input type="text" name="pin" />
+    <input type="Submit"/>
+{% end %}
