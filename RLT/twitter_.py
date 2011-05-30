@@ -6,6 +6,12 @@ try:
 except ImportError:
     import oauth
 
+try:
+      from urlparse import parse_qsl
+except:
+      from cgi import parse_qsl
+
+import pprint
 
 AUTHORIZATION_URL = 'http://twitter.com/oauth/authorize'
 SIGNIN_URL = 'http://twitter.com/oauth/authenticate'
@@ -16,7 +22,7 @@ class OAuthApi(Api):
     "OAuthApi code from http://oauth-python-twitter.googlecode.com"
     def __init__(self, consumer_key, consumer_secret, access_token=None):
         if access_token:
-            Api.__init__(self,access_token.key, access_token.secret)
+            Api.__init__(self,consumer_key=consumer_key, consumer_secret=consumer_secret, access_token_key=access_token.key, access_token_secret=access_token.secret)
         else:
             Api.__init__(self)
         self._Consumer = oauth.OAuthConsumer(consumer_key, consumer_secret)
@@ -202,30 +208,19 @@ class twitterParser(object):
     def __init__(self):
         self.api = OAuthApi(self.CONSUMERKEY, self.CONSUMERSECRET)
         self.request_token = self.api.getRequestToken()
-        if not self.accesstoken:
-            self.getpin()
+        self.auth_url = self.api.getAuthorizationURL(self.request_token)
+        self.pin=False
         self.users=[]
         self.tweets=[]
 
     def getpin(self):
-        self.auth_url = self.api.getAuthorizationURL(self.request_token)
         # FIXME Make user launch URL
         # This is hard, as we've got to deceide if via web or locally...
         # And then get results acording to one thing or another...
         # What about to store it in a cookie/file??
-        self.getrealpin() # This will be it
         if self.pin:
             self.api = OAuthApi(self.CONSUMERKEY, self.CONSUMERSECRET, self.request_token)
             self.accesstoken = self.api.getAccessToken(self.pin)
-
-    def getrealpin(self):
-        """
-            laucnh self.auth_url and store pin in self.pin got from user.
-        """
-        # FIXME Not implemented
-        print self.auth_url
-        self.pin=raw_input('PIN: ')
-        return
 
     def second_level_find(self,list_,key):
         for sublist in list_: 

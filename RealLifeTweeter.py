@@ -7,13 +7,13 @@ import tornado.web
 from RLT.twitter_ import *
 from RLT.main import CLIArgumentParser as Interface
 from RLT.processors import *
-from RLT.oauth_ import *
+#from RLT.oauth_ import *
 
 
 debug=False
 if debug: import pprint
 
-class main(twitterParser, Interface, ResultsGenerator):
+class main(Interface, ResultsGenerator, twitterParser):
     def __init__(self):
         global args
         super(self.__class__, self).__init__()
@@ -22,6 +22,8 @@ class main(twitterParser, Interface, ResultsGenerator):
         self.start_time=time.time()
         self.parse()
         args=self.args
+        if not self.accesstoken:
+            self.getpin()
 
         if not type(self.args.hashtag) is list: self.args.hashtag=[self.args.hashtag]
         if not type(self.args.user) is list: self.args.user=[self.args.user]
@@ -68,7 +70,6 @@ class main(twitterParser, Interface, ResultsGenerator):
                     a.api = twitter.Api(consumer_secret=a.auth[0], access_token_key=a.auth[1], access_token_secret=a.auth[2])
             except Exception:
                 pass
-
             try:
                 if not args.get_user_info: args.get_user_info=self.get_argument('get_user_info')
             except Exception, e:
@@ -82,8 +83,6 @@ class main(twitterParser, Interface, ResultsGenerator):
             except:
                 pass
 
-            
-
             if args.hashtag or args.get_user_info or args.users:
                 args.timeout=False
                 a.args=args
@@ -92,6 +91,18 @@ class main(twitterParser, Interface, ResultsGenerator):
                 a.finished=False
                 if slug is not "MainPage":
                     content=a.loop(True)
+            try:
+                a.pin=self.get_argument('pin')
+            except:
+                self.pin=False
+            try:
+                content=a.auth_url
+            except:
+                pass
+            a.getpin()
+            if not a.pin:
+               slug="auth"
+
             return self.render('Templates/%s' %slug, title=args.title, content=content)
 
 if __name__ == "__main__":

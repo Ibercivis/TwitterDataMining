@@ -25,6 +25,7 @@ class CLIArgumentParser(object):
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds', default=False)
         self.parser.add_argument('--since_id', dest='since_id',  help='Get tweets from this id on.', default=False)
         self.parser.add_argument('--auth', dest='auth',  help='Autentication credentials to use', default=False)
+        self.parser.add_argument('--auth_url', dest='auth_url',  help='Autentication url to use', default=False)
         self.parser.add_argument('--read_file', dest='read_file',  help='Get tweets from this file in json format.', default=False)
         self.parser.add_argument('--dont_parse_weight', action="store_false", dest='parse_weight',  help='Dont bother about tweet\'s weight. AKA let not-retweeted in right now.', default=False)
         self.parser.add_argument('--get_json', dest='get_json', action="store_true", help='Return json instead of html', default=False)
