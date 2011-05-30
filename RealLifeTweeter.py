@@ -1,22 +1,21 @@
 #!/usr/bin/python2.7
 # -*- coding: UTF-8 -*-
-from RLT import *
 import time
 import os
-class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentParser):
+import tornado
+import tornado.web
+from RLT.twitter_ import *
+from RLT.main import CLIArgumentParser as Interface
+from RLT.processors import *
+from RLT.oauth_ import *
+
+
+debug=False
+if debug: import pprint
+
+class main(twitterParser, Interface, ResultsGenerator):
     def __init__(self):
         global args
-        self.OAUTH_APP_SETTINGS = {
-            'twitter': {
-                'consumer_key': '',
-                'consumer_secret': '',
-                'request_token_url': 'https://twitter.com/oauth/request_token',
-                'access_token_url': 'https://twitter.com/oauth/access_token',
-                'user_auth_url': 'http://twitter.com/oauth/authorize',
-                'default_api_prefix': 'http://twitter.com',
-                'default_api_suffix': '.json',
-            },
-        }
         super(self.__class__, self).__init__()
         self.finished=False
         self.exit=False
@@ -30,17 +29,18 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
     def loop(self, html=False, table="tweets"):
         while not self.finished:
             if not args.timeout:
-                print args.get_user_info
-                if "True" in args.get_user_info :
-                    table="Users"
-                    self.get_user_info(args.user)
-                elif args.user and not args.get_user_info is "True":
-                    self.get_by_timeline_array(args.user)
-                if args.hashtag and not args.get_user_info is "True":
-                    self.get_by_hashtag(args.hashtag)
-                if args.read_file:
-                    self.get_by_file(self.args.read_file)
-
+                try:
+                    if args.get_user_info :
+                        table="Users"
+                        self.get_user_info(args.user)
+                    elif args.user and not args.get_user_info is "True":
+                        self.get_by_timeline_array(args.user)
+                    if args.hashtag and not args.get_user_info is "True":
+                        self.get_by_hashtag(args.hashtag)
+                    if args.read_file:
+                        self.get_by_file(self.args.read_file)
+                except:
+                    pass
                 self.finished=True
             elif ( time.time() - self.start_time ) > int(self.args.timeout):
                 break
@@ -66,14 +66,12 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
                 else:
                     a.auth=args.auth.split(',') 
                     a.api = twitter.Api(consumer_secret=a.auth[0], access_token_key=a.auth[1], access_token_secret=a.auth[2])
-            except Exception, e:
-                print "Ey, could not auth myself! %s" %e
+            except Exception:
                 pass
 
             try:
                 if not args.get_user_info: args.get_user_info=self.get_argument('get_user_info')
             except Exception, e:
-                print e
                 pass
             try:
                 if len(args.hashtag) > 0: args.hashtag=self.get_argument('hashtags').split(',')
@@ -84,6 +82,8 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
             except:
                 pass
 
+            
+
             if args.hashtag or args.get_user_info or args.users:
                 args.timeout=False
                 a.args=args
@@ -92,7 +92,7 @@ class main(twitterParser, InterchangeableInterface, ResultsGenerator, ArgumentPa
                 a.finished=False
                 if slug is not "MainPage":
                     content=a.loop(True)
-            return self.render('Templates/%s' %slug, content=content)
+            return self.render('Templates/%s' %slug, title=args.title, content=content)
 
 if __name__ == "__main__":
     global a

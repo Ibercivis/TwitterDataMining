@@ -1,1 +1,15 @@
-{{ args }}    Generate tweets for..
+<html>
+     <head>
+        <title>Real life twitter</title>
+     </head>
+     <body>
+
+        <form action="#">
+
+            <input type="text" id="users" name="users"> </input><br/>
+
+            <input type="text" name="hashtags" id="hashtags"> </input>
+            <input type="submit"/>
+         </form>
+     </body>
+</html>
