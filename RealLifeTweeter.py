@@ -4,16 +4,16 @@ import time
 import os
 import tornado
 import tornado.web
-from RLT.twitter_ import *
+from RLT.twitter_ import twitterParser as Parser
 from RLT.main import CLIArgumentParser as Interface
-from RLT.processors import *
+from RLT.processors import ResultsGenerator as Processor
 #from RLT.oauth_ import *
 
 
 debug=False
 if debug: import pprint
 
-class main(Interface, ResultsGenerator, twitterParser):
+class main(Interface, Processor, Parser):
     def __init__(self):
         global args
         super(self.__class__, self).__init__()
@@ -52,7 +52,13 @@ class main(Interface, ResultsGenerator, twitterParser):
                 self.get_by_timeline_array(self.args.user)
                 time.sleep(30)
         if self.exit: return
-        return self.process_data(html, table)
+
+        if table is "tweets":
+            object_=self.tweets
+        else:
+            object_=self.users
+
+        return self.process_data(html, object_)
 
     class RequestHandler(tornado.web.RequestHandler):
         def get(self, slug="MainPage"):
@@ -61,7 +67,30 @@ class main(Interface, ResultsGenerator, twitterParser):
             """
             global args
             content=""
+            self.get_arguments_()
+            a.getpin()
 
+            if not a.pin:
+               slug="auth"
+
+            if args.hashtag or args.get_user_info or args.users:
+                if a.pin:
+                    args.timeout=False
+                    a.args=args
+                    a.tweets=[]
+                    a.users=[]
+                    a.finished=False
+                    if slug is not "MainPage":
+                        loop=a.loop(True)
+                        if slug is not "json":
+                            content=loop[0]
+                        else:
+                            content=loop
+            return self.render('Templates/%s' %slug, title=args.title, content=content)
+
+        def get_arguments_(self):
+            global args
+            global a
             try:
                 if not args.auth: 
                     args.auth=self.get_argument('auth')
@@ -93,27 +122,9 @@ class main(Interface, ResultsGenerator, twitterParser):
                 self.pin=False
 
             try:
-                if not a.pin:
-                    content=a.auth_url
+                if not a.pin: content=a.auth_url
             except:
                 pass
-
-
-            a.getpin()
-            if not a.pin:
-               slug="auth"
-
-            if args.hashtag or args.get_user_info or args.users:
-                if a.pin:
-                    args.timeout=False
-                    a.args=args
-                    a.tweets=[]
-                    a.users=[]
-                    a.finished=False
-                    if slug is not "MainPage":
-                        content=a.loop(True)
-
-            return self.render('Templates/%s' %slug, title=args.title, content=content)
 
 if __name__ == "__main__":
     global a
