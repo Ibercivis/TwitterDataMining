@@ -1,6 +1,6 @@
 #!/usr/bin/env python 
 # -*- coding: UTF-8 -*-
-
+import pprint
 
 class fileParser(object):
 
@@ -20,22 +20,24 @@ class twitterParser(object):
 
     def get_user_info(self, users):
         for user in users:
-            if user is None: return
-            print "getting user %s" %user
-            self.users.append([self.api.GetUser(user), self.api.GetFriends(user), self.api.GetFollowers(user) ])
-
+            if not user: return
+            user_=list(self.api.GetUser(user), self.api.GetFriends(user), self.api.GetFollowers(user))
+            self.users.append(user_)
+            pprint.pprint( self.users )
+            pprint.pprint( user_ )
 
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_
 
         for user in timelines:
-            if user is None: return
+            if not user: return
             options={
                 'screen_name': user,
                 'since_id': self.args.since_id,
                 'count': self.args.count,
             }
             try:
+                print "Getting user timelines %s" %timelines
                 for i in self.api.GetUserTimeline(**options): # TODO Fill options.
                     if not self.args.parse_weight:
                         if not self.second_level_find(self.tweets, i.text):

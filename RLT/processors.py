@@ -20,9 +20,8 @@ class JSONExporter(Result):
     def result(self, return_json=False, obj=False):
         if self.args.get_json or self.args.get_user_info: return_json=True
         if return_json: return self.json_(obj)
-
-
     def json_(self, obj):
+        print obj
         b=[ c.AsDict() for c in obj[0] if type(c) is not types.NoneType ]
         b.append(obj[1])
         if self.args.save_file:
@@ -62,7 +61,7 @@ class HTMLExporter(Result):
 
         if self.args.save_file:
             with codecs.open(self.get_filename() + '.html','w','utf-8') as page_:
-                page_.write(a.encode('ascii','ignore'))
+                page_.write(html.encode('ascii','ignore'))
 
         if return_html:
             return html
@@ -73,10 +72,13 @@ class HTMLExporter(Result):
                 a+="</tbody></table><table class='sample'><tbody>"
                 j=0
             j=j+1
-            pri=i[0][2]
-            sec=""
-            if len(i) != 1: sec=i[1][2]
-            a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
+            try:
+                pri=i[0][2]
+                sec=""
+                if len(i) != 1: sec=i[1][2]
+                a+="<tr><td><p>%s</p></td><td><p>%s</p></td></tr>" %(pri, sec)
+            except:
+                pass
         return a
 
 class ResultsGenerator(object):
@@ -100,9 +102,11 @@ class ResultsGenerator(object):
                 ]
         self.objects=[]
 
-        HTMLExporter(self.objects, self.args)
+        try: HTMLExporter(self.objects, self.args)
+        except: pass
         #SQLiteExporter(self.objects, self.args)
         #MysqlExporter(self.objects, self.args)
-        JSONExporter(self.objects, self.args)
+        try: JSONExporter(self.objects, self.args)
+        except: pass
 
         return [ a.result(*opts[b]) for b,a in enumerate(self.objects)]

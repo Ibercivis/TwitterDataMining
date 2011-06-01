@@ -1,9 +1,9 @@
-{%extends base.html%}
+{%extends ../Templates/base.html%}
 {%block scripts%}
-<script src="static/js/jquery.js"></script>
-<script src="static/js/jquery-ui.js"></script>
-<script type="text/javascript" src="static/js/jquery.jqtransform.js"></script>
-<link rel="stylesheet" href="static/jqtransform.css" />
+<script src="../static/js/jquery.js"></script>
+<script src="../static/js/jquery-ui.js"></script>
+<script type="text/javascript" src="../static/js/jquery.jqtransform.js"></script>
+<link rel="stylesheet" href="../static/jqtransform.css" />
 <script>
 $('#tabs').tabs();
 $("form.jqtransform").jqTransform();
