@@ -11,8 +11,14 @@ class Result(object):
 
     def get_filename(self):
         if self.args.file: return self.args.file
+        a=""
+        try: a+='_'.join(self.args.hashtag)
+        except: pass
+        try: a+='_'.join(self.args.user)
+        except: pass
+
         try:
-            return ('_').join(self.args.hashtag) + "_" + ('_').join(self.args.user)
+            return a
         except:
             return "Undefined"
 
@@ -21,23 +27,23 @@ class JSONExporter(Result):
         if self.args.get_json or self.args.get_user_info: return_json=True
         if return_json: return self.json_(obj)
     def json_(self, obj):
-        print obj
         b=[ c.AsDict() for c in obj[0] if type(c) is not types.NoneType ]
         b.append(obj[1])
         if self.args.save_file:
-            with open(self.get_filename() + '.json', 'w') as file:
-                file.write(json.dumps(b))
+            with open(self.get_filename() + '.json', 'w') as file_:
+                file_.write(json.dumps(b))
         return json.dumps(b)
 
 class SQLiteExporter(Result):
     def result(self, return_sqlite=False, obj=False):
         if self.args.sqlite: return_sqlite=True
         if return_sqlite:
+            import sqlite3
             c=sqlite3.connect(self.get_filename() + '.sqlite3').cursor()
             if self.args.get_user_info:
                 c.execute('Create table users if not exists (name text, followers text, following text, geocode text) ')
                 for user in self.users:
-                    c.execute('Insert into users (%s,%s,%s,%s)' %(user.name, user.followers, user.following, user.geocode)) # FIXME TODO
+                    c.execute('Insert into users (%s,%s,%s,%s)' %(user.name, user.followers, user.following, user.geocode)) # FIXME make this rigmake this right..
 
             if len(self.args.tweets) > 0:
                 c.execute('Create table tweets if not exists (user text, text text, date text) ')
@@ -46,13 +52,24 @@ class SQLiteExporter(Result):
 
 class MYSQLExporter(Result):
     def result(self, return_mysql=False, obj=False):
-        query=[ "Insert into tweets (%s,%s,%s,%s,%s)" , # FIXME
+        if not self.args.mysql: return
+        import MySQLdb
+        query=[ "Insert into tweets (%s,%s,%s,%s,%s)" , # FIXME make this right.
                 "Insert into users (%s,%s,%s,%s,%s)"
                 ]
-        return [ self.save(query[i] %(o)) for i,o in enumerate(obj)]
+        mysql=self.args.mysql 
+        self.sqlconn= MySQLdb.connect (host = mysql[0], user = mysql[1], passwd = mysql[2], db = mysql[3])
 
-    def save(self, query):
-        #TODO Save it =D
+        return [ self.save(query[i], o) for i,o in enumerate(obj)]
+
+    def save(self, query, args):
+        try:
+            self.sqlconn.cursor().execute(query %args)
+        except:
+            pass
+        with open(self.get_filename + '.mysql', 'a') as file_:
+            file_.write(query)
+
         return
 
 class HTMLExporter(Result):

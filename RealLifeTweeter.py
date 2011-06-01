@@ -22,6 +22,9 @@ class main(Interface, WebInterface, Processor, Parser, FileParser):
         self.exit=False
         self.start_time=time.time()
         self.parse()
+        self.tweets=[]
+        self.users=[]
+        self.finished=False
 
         if not type(self.args.hashtag) is list: self.args.hashtag=[self.args.hashtag]
         if not type(self.args.user) is list: self.args.user=[self.args.user]
@@ -31,7 +34,6 @@ class main(Interface, WebInterface, Processor, Parser, FileParser):
             if not self.args.timeout:
                 try:
                     if self.args.get_user_info:
-                        print self.args
                         table="Users"
                         self.get_user_info(self.args.user)
                     elif self.args.user and not self.args.get_user_info is "True":  self.get_by_timeline_array(self.args.user)
@@ -76,7 +78,8 @@ class MainApp(object):
             http_server = tornado.httpserver.HTTPServer(Application(self.a.args, self.a))
             http_server.listen(8080)
             tornado.ioloop.IOLoop.instance().start()
-        else: self.a.loop()
+        else: 
+            self.a.loop(True)
 
     def assign_api(self, b):
         try: b.api = twitter.Api(consumer_key=b.args.auth[0], consumer_secret=b.args.auth[1], access_token_key=b.args.auth[2], access_token_secret=b.args.auth[3])

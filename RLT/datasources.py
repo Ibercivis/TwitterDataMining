@@ -1,6 +1,5 @@
 #!/usr/bin/env python 
 # -*- coding: UTF-8 -*-
-import pprint
 
 class fileParser(object):
 
@@ -21,10 +20,7 @@ class twitterParser(object):
     def get_user_info(self, users):
         for user in users:
             if not user: return
-            user_=list(self.api.GetUser(user), self.api.GetFriends(user), self.api.GetFollowers(user))
-            self.users.append(user_)
-            pprint.pprint( self.users )
-            pprint.pprint( user_ )
+            self.users.extend(self.api.GetFriends(user))
 
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_
@@ -37,7 +33,6 @@ class twitterParser(object):
                 'count': self.args.count,
             }
             try:
-                print "Getting user timelines %s" %timelines
                 for i in self.api.GetUserTimeline(**options): # TODO Fill options.
                     if not self.args.parse_weight:
                         if not self.second_level_find(self.tweets, i.text):
