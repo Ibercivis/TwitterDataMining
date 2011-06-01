@@ -3,7 +3,7 @@
 import codecs
 import json
 import types
-import pprint 
+
 class Result(object):
     def __init__(self, generators, args):
         generators.append(self)
@@ -50,7 +50,11 @@ class MYSQLExporter(Result):
         query=[ "Insert into tweets (%s,%s,%s,%s,%s)" , # FIXME
                 "Insert into users (%s,%s,%s,%s,%s)"
                 ]
-        return [ self.save(query[i], o) for i,o in enumerate(obj)]
+        return [ self.save(query[i] %(o)) for i,o in enumerate(obj)]
+
+    def save(self, query):
+        #TODO Save it =D
+        return
 
 class HTMLExporter(Result):
     def result(self, return_html=False, obj=False):

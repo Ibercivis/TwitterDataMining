@@ -1,32 +1,18 @@
 #!/usr/bin/env python 
 # -*- coding: UTF-8 -*-
-from twitter import Api, User
+
+
+class fileParser(object):
+
+    def get_by_file(self, file_):
+        with open(file_) as f:
+            json.loads(f.read())
 
 class twitterParser(object):
     """
         Gets tweets, filters them and orders them by weight
         Note: for analizer it currently not parses weight...
     """
-    accesstoken=False
-    auth_url=""
-    CONSUMERKEY="KPykPtL27CCIes3H7hPiA"
-    CONSUMERSECRET="pVKiXlweobZIjEh3gOiaNB5r5e8bCx1Wz3fJqZt9o"
-
-    def __init__(self):
-#        self.request_token = self.api.getRequestToken()
-#        self.auth_url = self.api.getAuthorizationURL(self.request_token)
-        self.pin=False
-        self.users=[]
-        self.tweets=[]
-
-    def getpin(self):
-        if self.pin:
-            try:
-                self.api = Api(self.CONSUMERKEY, self.CONSUMERSECRET)
-            except:
-                self.api = Api()
-
-        return self.accesstoken
 
     def second_level_find(self,list_,key):
         for sublist in list_: 
@@ -38,9 +24,6 @@ class twitterParser(object):
             print "getting user %s" %user
             self.users.append([self.api.GetUser(user), self.api.GetFriends(user), self.api.GetFollowers(user) ])
 
-    def get_by_file(self, file_):
-        with open(file_) as f:
-            json.loads(f.read())
 
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_
