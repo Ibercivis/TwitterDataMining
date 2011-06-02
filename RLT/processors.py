@@ -71,6 +71,7 @@ class MYSQLExporter(Result):
             self.sqlconn.cursor().execute(query %tuple(args))
         except Exception, e:
             print e
+            print "Probably something failed connecting to db"
             pass
         with open(self.get_filename() + '.mysql', 'a') as file_:
             file_.write(query %tuple(args))
