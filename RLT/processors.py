@@ -28,7 +28,7 @@ class JSONExporter(Result):
         if return_json: return self.json_(obj)
     def json_(self, obj):
         if self.args.save_file:
-            with open(self.get_filename() + '.json', 'w') as file_:
+            with open(self.get_filename() + '.json', 'a') as file_:
                 file_.write(json.dumps(obj))
         return json.dumps(obj)
 
@@ -52,13 +52,12 @@ class MYSQLExporter(Result):
     def result(self, return_mysql=False, obj=False):
         if not self.args.mysql: return
         import MySQLdb
-        query=[ "Insert into tweets (%s,%s,%s,%s,%s)" , # FIXME make this right.
-                "Insert into users (%s,%s,%s,%s,%s)"
+        query=[ "Insert into tw_user  (name, tw_id, task_status, task_host, created_at, statuses_count, friend_count, followers_count, geo_lat, get_long, geo_text) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" , # FIXME make this right.
+                "Insert into user_followers (%s,%s,%s,%s,%s)"
                 ]
         mysql=self.args.mysql 
         self.sqlconn= MySQLdb.connect (host = mysql[0], user = mysql[1], passwd = mysql[2], db = mysql[3])
 
-        return [ self.save(query[i], o) for i,o in enumerate(obj)]
 
     def save(self, query, args):
         try:
@@ -102,6 +101,51 @@ class ResultsGenerator(object):
         override it for generating your own results.
     """
 
+    def get_mysql_obj(self, users):
+        """
+            Return parsed objects ready to be injected in mysql queries for a BIFI project's datamining 
+        """
+        myusers=[]
+        myfollowers=[]
+        myfriends=[]
+        self.host="127.0.0.1"
+
+        for user in users[0]:
+            user_=users[0][user]
+
+            try:
+                (geo_lat, geo_long)=user_[0]['status']['geo'].split(',')
+            except:
+                geo_lat=""
+                geo_long=""
+
+            try:
+                myusers.append(
+                    [
+                        user_[0]['screen_name'],
+                        user_[0]['id'],
+                        2,
+                        self.host,
+                        user_[0]['created_at'],
+                        user_[0]['statuses_count'],
+                        user_[0]['friends_count'],
+                        user_[0]['followers_count'],
+                        geo_lat,
+                        geo_long,
+                        user_[0]['location'],
+                    ]
+                    )
+            except Exception, e:
+                print e
+
+            for follower_id in user_[1]['ids']:
+                myfollowers.append([user_[0]['id'], follower_id])
+
+            for friend_id in user_[2]['ids']:
+                myfriends.append(user[0]['id'], friend_id])
+
+        return (myusers, myfollowers, myfriends)
+
     def process_data(self, get_html=False, obj=False):
         if not obj:
             obj=(self.tweets, self.users)
@@ -112,7 +156,7 @@ class ResultsGenerator(object):
         opts=[
                 [True, obj], # HTMLExporter
                 #[get_html, obj], # SQLiteExporter
-                #[False, obj], # MysqlExporter
+                [False, self.get_mysql_obj(obj)], # MYSQLExporter
                 [False, (self.users, self.tweets)], # JSONExporter
                 ]
         self.objects=[]
@@ -120,7 +164,8 @@ class ResultsGenerator(object):
         try: HTMLExporter(self.objects, self.args)
         except: pass
         #SQLiteExporter(self.objects, self.args)
-        #MysqlExporter(self.objects, self.args)
+        try: MysqlExporter(self.objects, self.args)
+        except: pass
         try: JSONExporter(self.objects, self.args)
         except: pass
 

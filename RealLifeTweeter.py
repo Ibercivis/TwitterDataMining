@@ -6,6 +6,7 @@ import tornado
 import tornado.httpserver
 import tornado.web
 import twitter 
+import types
 from RLT.datasources import twitterParser as Parser
 from RLT.datasources import fileParser as FileParser
 from RLT.interfaces import CLIArgumentParser as Interface
@@ -26,8 +27,8 @@ class main(Interface, WebInterface, Processor, Parser, FileParser):
         self.users=[]
         self.finished=False
 
-        if not type(self.args.hashtag) is list: self.args.hashtag=[self.args.hashtag]
-        if not type(self.args.user) is list: self.args.user=[self.args.user]
+        if  type(self.args.hashtag) is types.StringType: self.args.hashtag=self.args.hashtag.split(',')
+        if  type(self.args.user) is types.StringType: self.args.user=self.args.user.split(',')
 
     def loop(self, html=False, table="tweets"):
         while not self.finished:
@@ -79,6 +80,7 @@ class MainApp(object):
             http_server.listen(8080)
             tornado.ioloop.IOLoop.instance().start()
         else: 
+            if self.a.args.external_users: self.a.args.user=self.a.get_external_usernames()
             self.a.loop(True)
 
     def assign_api(self, b):
@@ -92,6 +94,5 @@ class MainApp(object):
                 b.api=TwitterOauth().get_api()
             except Exception, e:
                 b.api=twitter.Api()
-
 
 if __name__ == "__main__": MainApp()

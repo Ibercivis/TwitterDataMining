@@ -26,6 +26,7 @@ class CLIArgumentParser(object):
         self.parser.add_argument('--max_tweets', dest='count',  help='Get COUNT Tweets.', default=False)
         # Read from file
         self.parser.add_argument('--read_file', dest='read_file',  help='Get tweets from this file in json format.', default=False)
+        self.parser.add_argument('--external_users', dest='external_users',  help='Get usernames from this file in csv format.', default=False)
         # Main options
         self.parser.add_argument('--server', dest='server',  action="store_true", help='launch server', default=False)
         self.parser.add_argument('--title', default="Real Life twitter", dest='title',  help='specify title')
@@ -48,7 +49,7 @@ class TornadoRequestHandler(object):
             content=""
             args=self.get_arguments_(self.settings['args'])
             a=self.settings['a']
-            if args.hashtag or args.get_user_info or args.users:
+            if args.hashtag or args.get_user_info or args.user:
                 args.timeout=False
                 a.args=args
                 a.tweets=[]
@@ -77,5 +78,8 @@ class TornadoRequestHandler(object):
             if auth: args.auth=auth
             if get_user_info: args.get_user_info=get_user_info
             if hashtag: args.hashtag=hashtag
-            if usernames: args.user=usernames
+            if not args.external_users:
+                if usernames: args.user=usernames
+            else:
+                args.user=a.get_external_usernames()
             return args

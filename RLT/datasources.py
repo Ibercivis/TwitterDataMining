@@ -7,6 +7,10 @@ class fileParser(object):
         with open(file_) as f:
             json.loads(f.read())
 
+    def get_external_usernames(self):
+        with open(self.args.external_users) as f:
+            return f.read().split(',')
+
 class twitterParser(object):
     """
         Gets tweets, filters them and orders them by weight
