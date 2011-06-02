@@ -152,11 +152,15 @@ class ResultsGenerator(object):
                 except Exception, e:
                     print e
                     dt=""
+                try:
+                    location=user_[0]['location'] 
+                except:
+                    location=""
 
                 myusers.append( [ user_[0]['screen_name'],  user_[0]['id'],  2,
                       self.host, dt, user_[0]['statuses_count'],
                       user_[0]['friends_count'], user_[0]['followers_count'], 
-                      geo_lat, geo_long,user_[0]['location'] ] )
+                      geo_lat, geo_long, location ] )
 
                 for follower_id in user_[1]['ids']:
                     myfollowers.append([user_[0]['id'], follower_id])
