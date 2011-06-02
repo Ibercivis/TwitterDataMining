@@ -3,6 +3,9 @@
 import codecs
 import json
 import types
+import socket
+import fcntl
+import struct
 
 class Result(object):
     def __init__(self, generators, args):
@@ -52,21 +55,26 @@ class MYSQLExporter(Result):
     def result(self, return_mysql=False, obj=False):
         if not self.args.mysql: return
         import MySQLdb
-        query=[ "Insert into tw_user  (name, tw_id, task_status, task_host, created_at, statuses_count, friend_count, followers_count, geo_lat, get_long, geo_text) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" , # FIXME make this right.
-                "Insert into user_followers (%s,%s,%s,%s,%s)"
+        query=[ "update tw_user set name=\'%s\', tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', get_long=\'%s\', geo_text=\'%s\'" ,
+                "Insert into tw_userfollower (user_tw_id, follower) values (%s,%s)",
+                "Insert into tw_frienduser (friend, user_tw_id) values (%s,%s)"
                 ]
-        mysql=self.args.mysql 
-        self.sqlconn= MySQLdb.connect (host = mysql[0], user = mysql[1], passwd = mysql[2], db = mysql[3])
-
+        mysql=self.args.mysql.split(',') 
+        try:
+            self.sqlconn= MySQLdb.connect (host = mysql[0], user = mysql[1], passwd = mysql[2], db = mysql[3])
+        except Exception, e:
+            print "Not saving to mysql database: %s" %e
+        return [ [ self.save(query[o], b) for b in i ] for o, i  in enumerate(obj)]
 
     def save(self, query, args):
         try:
-            self.sqlconn.cursor().execute(query %args)
-        except:
+            self.sqlconn.cursor().execute(query %tuple(args))
+        except Exception, e:
+            print e
             pass
-        with open(self.get_filename + '.mysql', 'a') as file_:
-            file_.write(query)
-
+        with open(self.get_filename() + '.mysql', 'a') as file_:
+            file_.write(query %tuple(args))
+            file_.write('\n')
         return
 
 class HTMLExporter(Result):
@@ -95,9 +103,22 @@ class HTMLExporter(Result):
                 pass
         return a
 
+def get_ip_address(ifname):
+    """
+    http://code.activestate.com/recipes/439094-get-the-ip-address-associated-with-a-network-inter/
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+
+
 class ResultsGenerator(object):
     """
-        Generates result both in html, txt and prints (if debug enabled) output to console.
+        Generates result both in html, txt, sql and prints (if debug enabled) output to console.
         override it for generating your own results.
     """
 
@@ -105,44 +126,42 @@ class ResultsGenerator(object):
         """
             Return parsed objects ready to be injected in mysql queries for a BIFI project's datamining 
         """
+        from datetime import datetime
+        import time
+
         myusers=[]
         myfollowers=[]
         myfriends=[]
-        self.host="127.0.0.1"
+        self.host=get_ip_address('eth0')
+        for users_ in users:
+            for user_ in users_:
+                user_=users_[user_]
+        
+                try:
+                    (geo_lat, geo_long)=user_[0]['status']['geo'].split(',')
+                except:
+                    geo_lat=""
+                    geo_long=""
+                try:
+                    a=user_[0]['created_at'].split(' ')
+                    b=a[0:4]
+                    b.append(a[5]) 
+                    b=' '.join(b)
+                    dt = time.mktime(datetime.strptime(b, "%a %b %d %H:%M:%S %Y").timetuple())
+                except Exception, e:
+                    print e
+                    dt=""
 
-        for user in users[0]:
-            user_=users[0][user]
+                myusers.append( [ user_[0]['screen_name'],  user_[0]['id'],  2,
+                      self.host, dt, user_[0]['statuses_count'],
+                      user_[0]['friends_count'], user_[0]['followers_count'], 
+                      geo_lat, geo_long,user_[0]['location'] ] )
 
-            try:
-                (geo_lat, geo_long)=user_[0]['status']['geo'].split(',')
-            except:
-                geo_lat=""
-                geo_long=""
-
-            try:
-                myusers.append(
-                    [
-                        user_[0]['screen_name'],
-                        user_[0]['id'],
-                        2,
-                        self.host,
-                        user_[0]['created_at'],
-                        user_[0]['statuses_count'],
-                        user_[0]['friends_count'],
-                        user_[0]['followers_count'],
-                        geo_lat,
-                        geo_long,
-                        user_[0]['location'],
-                    ]
-                    )
-            except Exception, e:
-                print e
-
-            for follower_id in user_[1]['ids']:
-                myfollowers.append([user_[0]['id'], follower_id])
-
-            for friend_id in user_[2]['ids']:
-                myfriends.append(user[0]['id'], friend_id])
+                for follower_id in user_[1]['ids']:
+                    myfollowers.append([user_[0]['id'], follower_id])
+    
+                for friend_id in user_[2]['ids']:
+                    myfriends.append([user_[0]['id'], friend_id])
 
         return (myusers, myfollowers, myfriends)
 
@@ -164,9 +183,8 @@ class ResultsGenerator(object):
         try: HTMLExporter(self.objects, self.args)
         except: pass
         #SQLiteExporter(self.objects, self.args)
-        try: MysqlExporter(self.objects, self.args)
-        except: pass
+        try: MYSQLExporter(self.objects, self.args)
+        except Exception, e: print e
         try: JSONExporter(self.objects, self.args)
         except: pass
-
         return [ a.result(*opts[b]) for b,a in enumerate(self.objects)]
