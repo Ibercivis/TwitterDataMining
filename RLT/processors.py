@@ -27,12 +27,10 @@ class JSONExporter(Result):
         if self.args.get_json or self.args.get_user_info: return_json=True
         if return_json: return self.json_(obj)
     def json_(self, obj):
-        b=[ c.AsDict() for c in obj[0] if type(c) is not types.NoneType ]
-        b.append(obj[1])
         if self.args.save_file:
             with open(self.get_filename() + '.json', 'w') as file_:
-                file_.write(json.dumps(b))
-        return json.dumps(b)
+                file_.write(json.dumps(obj))
+        return json.dumps(obj)
 
 class SQLiteExporter(Result):
     def result(self, return_sqlite=False, obj=False):

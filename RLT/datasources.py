@@ -18,9 +18,15 @@ class twitterParser(object):
             return sublist[2] == key
 
     def get_user_info(self, users):
+        """
+            FIXME Cant we get follower ids?
+        """
         for user in users:
             if not user: return
-            self.users.extend(self.api.GetFriends(user))
+            try: self.users.extend(self.api.GetFriendIDs(user)['ids'])
+            except Exception, e: print e
+            try: self.users.extend(self.api.GetFollowerIDs(user)['ids'])
+            except Exception, e: print e
 
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_

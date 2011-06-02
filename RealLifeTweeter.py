@@ -82,7 +82,8 @@ class MainApp(object):
             self.a.loop(True)
 
     def assign_api(self, b):
-        try: b.api = twitter.Api(consumer_key=b.args.auth[0], consumer_secret=b.args.auth[1], access_token_key=b.args.auth[2], access_token_secret=b.args.auth[3])
+        try:
+            b.api = twitter.Api(consumer_key=b.args.auth[0], consumer_secret=b.args.auth[1], access_token_key=b.args.auth[2], access_token_secret=b.args.auth[3])
         except:
             try:
                 from RLT.authentication import TwitterOauth as Api
