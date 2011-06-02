@@ -83,13 +83,14 @@ class MainApp(object):
 
     def assign_api(self, b):
         try:
+            c=b.args.auth[1]
             b.api = twitter.Api(consumer_key=b.args.auth[0], consumer_secret=b.args.auth[1], access_token_key=b.args.auth[2], access_token_secret=b.args.auth[3])
         except:
             try:
-                from RLT.authentication import TwitterOauth as Api
-                b.api=Api().get_api()
+                if b.args.noauth: raise Exception('Not autenticating')
+                from RLT.authentication import TwitterOauth 
+                b.api=TwitterOauth().get_api()
             except Exception, e:
-                print e
                 b.api=twitter.Api()
 
 

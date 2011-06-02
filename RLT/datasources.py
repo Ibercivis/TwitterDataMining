@@ -23,9 +23,9 @@ class twitterParser(object):
         """
         for user in users:
             if not user: return
-            try: self.users.extend(self.api.GetFriendIDs(user)['ids'])
-            except Exception, e: print e
-            try: self.users.extend(self.api.GetFollowerIDs(user)['ids'])
+            try:
+                user=self.api.GetUser(user)
+                self.users.append( { user.id : [ user.AsDict(), self.api.GetFollowerIDs(user.id) , self.api.GetFriendIDs(user.id) ]} )
             except Exception, e: print e
 
     def get_by_timeline_array(self, timelines):

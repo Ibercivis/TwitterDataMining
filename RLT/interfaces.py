@@ -32,6 +32,7 @@ class CLIArgumentParser(object):
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds', default=False)
         # Auth options
         self.parser.add_argument('--auth', dest='auth',  help='Autentication credentials to use', default=False)
+        self.parser.add_argument('--no-auth', dest='noauth',  action="store_true", help='Dont try to authenticate api', default=False)
         self.parser.add_argument('--auth_url', dest='auth_url',  help='Autentication url to use', default=False)
         # Data saving
         self.parser.add_argument('--destfile', dest='file',  help='Specify filenamSpecify filename ', default=False)
