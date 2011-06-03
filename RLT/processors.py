@@ -73,9 +73,12 @@ class MYSQLExporter(Result):
             print e
             print "Probably something failed connecting to db"
             pass
-        with open(self.get_filename() + '.mysql', 'a') as file_:
-            file_.write(query %tuple(args))
-            file_.write('\n')
+        try:
+            with open(self.get_filename() + '.mysql', 'a') as file_:
+                file_.write(query %tuple(args))
+                file_.write('\n')
+        except:
+            pass
         return
 
 class HTMLExporter(Result):
@@ -143,6 +146,7 @@ class ResultsGenerator(object):
                 except:
                     geo_lat=""
                     geo_long=""
+                """
                 try:
                     a=user_[0]['created_at'].split(' ')
                     b=a[0:4]
@@ -152,12 +156,29 @@ class ResultsGenerator(object):
                 except Exception, e:
                     print e
                     dt=""
+                """
+                try:
+                    dt=user[0]['created_at']
+                except:
+                    dt=""
+
                 try:
                     location=user_[0]['location'] 
+                    print location
                 except:
                     location=""
+
                 try:
-                    myusers.append( [ user_[0]['screen_name'],  user_[0]['id'],  2,
+                    screen_name=user_[0]['screen_name']
+                    print user_[0]['screen_name']
+                except:
+                    try:
+                        screen_name=user_[0]['screen_name'].encode('utf-8', errors='replace')
+                    except:
+                        screen_name=Failed
+
+                try:
+                    myusers.append( [ screen_name ,  user_[0]['id'],  2,
                           self.host, dt, user_[0]['statuses_count'],
                           user_[0]['friends_count'], user_[0]['followers_count'], 
                           geo_lat, geo_long, location ] )

@@ -27,9 +27,10 @@ class twitterParser(object):
             try:
                 user=self.api.GetUser(user.strip())
                 self.users.append( { user.id : [ user.AsDict(), self.api.GetFollowerIDs(user.id) , self.api.GetFriendIDs(user.id) ]} )
-            except Exception, e: 
-                print "Catching exception"
-                print e
+            except Exception, e:
+                import time
+                print "Exception: %s\nSleeping an hour" %e
+                time.sleep(3600)
 
     def get_by_timeline_array(self, timelines):
         filter_=self.args.filter_

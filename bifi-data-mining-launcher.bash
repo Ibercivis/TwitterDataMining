@@ -56,4 +56,4 @@ main(){
 }
 
 [[ $debug ]] && { [[ $log ]] && main &> $log || main ; } || main &>/dev/null
-python RealLifeTweeter.py  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db
+python RealLifeTweeter.py --destfile foo  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db
