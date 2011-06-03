@@ -131,9 +131,6 @@ class ResultsGenerator(object):
         """
             Return parsed objects ready to be injected in mysql queries for a BIFI project's datamining 
         """
-        from datetime import datetime
-        import time
-
         myusers=[]
         myfollowers=[]
         myfriends=[]
@@ -147,20 +144,11 @@ class ResultsGenerator(object):
                 except:
                     geo_lat=""
                     geo_long=""
-                """
+
                 try:
-                    a=user_[0]['created_at'].split(' ')
-                    b=a[0:4]
-                    b.append(a[5]) 
-                    b=' '.join(b)
-                    dt = time.mktime(datetime.strptime(b, "%a %b %d %H:%M:%S %Y").timetuple())
+                    dt=user_[0]['created_at']
                 except Exception, e:
-                    print e
-                    dt=""
-                """
-                try:
-                    dt=user[0]['created_at']
-                except:
+                    print "DATE ERROR: %s" %e
                     dt=""
 
                 try:
