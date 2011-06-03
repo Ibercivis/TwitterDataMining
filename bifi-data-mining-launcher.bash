@@ -49,15 +49,24 @@ getoptions "${@}"
 
 main(){
     echo "Connecting to $mysql_host with user $mysql_user and limit $limit for ip $ip and password $mysql_password"
-    set_myself_in_database $ip
+
+for i in `seq 1 3`; do
+    for i in `seq 1 10`; do
+    	set_myself_in_database $ip
+	rm $ip.csv; create_csv;
+	echo "Getting users:"
+	cat $ip.csv
+        python RealLifeTweeter.py --destfile foo  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db &> $log # Note: You can delete desfile and save_file
+    done 
+    sleep 600 # Sleep 10m foreach 10 users. This way we won't reach the limits
+done
+}
+
+create_csv(){
     csv="$(get_from_database ${ip})"
+    echo "Got $csv"
     echo $csv | sed "s/ /,/g" >> $ip.csv
 }
 
 [[ $debug ]] && { [[ $log ]] && main &> $log || main ; } || main &>/dev/null 
-for i in `seq 1 3`; do
-    for i in `seq 1 10`; do
-        rm $ip.csv; python RealLifeTweeter.py --destfile foo  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db # Note: You can delete desfile and save_file
-    done 
-    sleep 600 # Sleep 10m foreach 10 users. This way we won't reach the limits
-done
+
