@@ -1,5 +1,5 @@
 #!/bin/bash 
-mysql=/usr/bin/mysql; ifconfig=/sbin/ifconfig; iface=eth0; mysql_password="root"; mysql_host="localhost"; mysql_user="root"; limit=30; db="smmart_20"; table="tw_user"
+mysql=/usr/bin/mysql; ifconfig=/sbin/ifconfig; iface=eth0; mysql_password="root"; mysql_host="localhost"; mysql_user="root"; limit=1; db="smmart_20"; table="tw_user"
 debug=1
 log=foo.log
 getoptions(){
@@ -54,5 +54,10 @@ main(){
     echo $csv | sed "s/ /,/g" >> $ip.csv
 }
 
-[[ $debug ]] && { [[ $log ]] && main &> $log || main ; } || main &>/dev/null
-python RealLifeTweeter.py --destfile foo  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db
+[[ $debug ]] && { [[ $log ]] && main &> $log || main ; } || main &>/dev/null 
+for i in `seq 1 3`; do
+    for i in `seq 1 10`; do
+        rm $ip.csv; python RealLifeTweeter.py --destfile foo  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db # Note: You can delete desfile and save_file
+    done 
+    sleep 600 # Sleep 10m foreach 10 users. This way we won't reach the limits
+done

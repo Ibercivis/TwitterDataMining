@@ -141,9 +141,10 @@ class ResultsGenerator(object):
         
                 try:
                     (geo_lat, geo_long)=user_[0]['status']['geo'].split(',')
+                    print "Lat, long: %s,%s" %(geo_lat, geo_long)
                 except:
-                    geo_lat=""
-                    geo_long=""
+                    geo_lat=-1
+                    geo_long=-1
 
                 try:
                     dt=user_[0]['created_at']
