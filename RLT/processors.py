@@ -55,7 +55,7 @@ class MYSQLExporter(Result):
     def result(self, return_mysql=False, obj=False):
         if not self.args.mysql: return
         import MySQLdb
-        query=[ "update tw_user set name=\'%s\', tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\'" ,
+        query=[ "update tw_user set tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\' where  name=\'%s\'" ,
                 "Insert into tw_userfollower (user_tw_id, follower) values (%s,%s)",
                 "Insert into tw_frienduser (friend, user_tw_id) values (%s,%s)"
                 ]
@@ -68,6 +68,7 @@ class MYSQLExporter(Result):
 
     def save(self, query, args):
         try:
+            print(query %tuple(args))
             self.sqlconn.cursor().execute(query %tuple(args))
         except Exception, e:
             print e
@@ -178,10 +179,10 @@ class ResultsGenerator(object):
                         screen_name=Failed
 
                 try:
-                    myusers.append( [ screen_name ,  user_[0]['id'],  2,
-                          self.host, dt, user_[0]['statuses_count'],
+                    myusers.append( [ user_[0]['id'],  2, self.host, dt, user_[0]['statuses_count'],
                           user_[0]['friends_count'], user_[0]['followers_count'], 
-                          geo_lat, geo_long, location ] )
+                          geo_lat, geo_long, location, screen_name 
+                          ] )
                 except Exception, e:
                     print e
                     pass
