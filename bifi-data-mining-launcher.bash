@@ -40,7 +40,7 @@ get_mysql_opts(){
 }
 
 get_ip(){ awk '/inet addr/ {print substr($2, 6)}' <<< "$($ifconfig $iface)"; } # WARN: This might not be nicely ported... but hell, the rest of the script isn't either.
-execute_mysql_query(){ $mysql $(get_mysql_opts) $db <<< "${1}" ; }
+execute_mysql_query(){ $mysql $(get_mysql_opts) -N $db <<< "${1}" ; }
 set_myself_in_database(){ execute_mysql_query "update $table set task_host='$1', task_status=1 where task_status=0 limit $limit"; }
 get_from_database(){ execute_mysql_query "select name from $table where task_host='$1' and task_status=1"; }
 
@@ -48,7 +48,6 @@ ip=$(get_ip)
 getoptions "${@}"
 
 main(){
-
     echo "Connecting to $mysql_host with user $mysql_user and limit $limit for ip $ip and password $mysql_password"
     set_myself_in_database $ip
     csv="$(get_from_database ${ip})"
