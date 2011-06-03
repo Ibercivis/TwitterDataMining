@@ -55,7 +55,7 @@ class MYSQLExporter(Result):
     def result(self, return_mysql=False, obj=False):
         if not self.args.mysql: return
         import MySQLdb
-        query=[ "update tw_user set name=\'%s\', tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', get_long=\'%s\', geo_text=\'%s\'" ,
+        query=[ "update tw_user set name=\'%s\', tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\'" ,
                 "Insert into tw_userfollower (user_tw_id, follower) values (%s,%s)",
                 "Insert into tw_frienduser (friend, user_tw_id) values (%s,%s)"
                 ]
