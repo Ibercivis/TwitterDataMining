@@ -24,7 +24,7 @@ opts = {
         }
     }
 
-setup(name='TwitterDataMiner',
+setup(name='RealLifeTwitter',
       version='0.1.1',
       download_url='https://github.com/XayOn/RealLifeTwitter/downloads',
       requires=['MySQL_python','argparse', 'python_twitter'],
