@@ -3,7 +3,7 @@
 from distutils.core import setup
 import sys, os, shutil
 
-scripts=['TwitterDataMiner', 'TwitterDataMinerHelper' ]
+scripts=['TwitterDataMiner']
 if os.name is not "posix":
     if os.name is "nt":
         import py2exe

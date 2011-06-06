@@ -1,0 +1,9 @@
+49c44941223ab5a4c2c97d67b0e0eb70  usr/bin/TwitterDataMiner
+6218f7f749aea1d99a3fa8acb8b7191d  usr/share/doc/python-twitterdataminer/changelog.Debian.gz
+1a0ac4ec7cfc966f5ff2e29c313dd999  usr/share/pyshared/RLT/__init__.py
+b7b44d3486791ea686deaea07faf5088  usr/share/pyshared/RLT/authentication.py
+96599ecf5e6143b33e4f75243e965962  usr/share/pyshared/RLT/datasources.py
+ecaf5e44ea86820d466809aa56bc1666  usr/share/pyshared/RLT/interfaces.py
+128dfc5ab9c9afcf72f59a0aa7a96a53  usr/share/pyshared/RLT/processors.py
+4cdd35ea76203261b7fb8f68981cff88  usr/share/pyshared/TwitterDataMiner-0.1.2.egg-info
+54509a2a79bb508861924ed83ac0f7fa  usr/share/python-support/python-twitterdataminer.public

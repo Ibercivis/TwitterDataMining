@@ -1,0 +1,75 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+import time
+import os
+import twitter 
+import types
+from RLT.datasources import twitterParser as Parser
+from RLT.datasources import fileParser as FileParser
+from RLT.interfaces import CLIArgumentParser as Interface
+from RLT.processors import ResultsGenerator as Processor
+
+debug=False
+if debug: import pprint
+
+class main(Interface, Processor, Parser, FileParser):
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self.finished=False
+        self.exit=False
+        self.start_time=time.time()
+        self.parse()
+        self.tweets=[]
+        self.users=[]
+        self.finished=False
+
+        if  type(self.args.hashtag) is types.StringType: self.args.hashtag=self.args.hashtag.split(',')
+        if  type(self.args.user) is types.StringType: self.args.user=self.args.user.split(',')
+
+    def loop(self, html=False, table="tweets"):
+        while not self.finished:
+            if not self.args.timeout:
+                try:
+                    if self.args.get_user_info:
+                        table="Users"
+                        self.get_user_info(self.args.user)
+                    elif self.args.user and not self.args.get_user_info is "True":  self.get_by_timeline_array(self.args.user)
+                    if self.args.hashtag and not self.args.get_user_info is "True": self.get_by_hashtag(self.args.hashtag)
+                    if self.args.read_file: self.get_by_file(self.args.read_file)
+                except: pass
+                self.finished=True
+            elif ( time.time() - self.start_time ) > int(self.args.timeout):
+                break
+            else:
+                # We put a 30 seconds sleep because twitter's api 1 minute caching.
+                self.get_by_hashtag(self.args.hashtag)
+                time.sleep(30)
+                self.get_by_timeline_array(self.args.user)
+                time.sleep(30)
+
+        if self.exit: return
+        if table is "tweets": object_=self.tweets
+        else: object_=self.users
+        return self.process_data(html, object_)
+
+class MainApp(object):
+    def __init__(self):
+        global a
+        self.a=main()
+        self.assign_api(self.a)
+        if self.a.args.external_users: self.a.args.user=self.a.get_external_usernames()
+        self.a.loop(True)
+
+    def assign_api(self, b):
+        try:
+            c=b.args.auth[1]
+            b.api = twitter.Api(consumer_key=b.args.auth[0], consumer_secret=b.args.auth[1], access_token_key=b.args.auth[2], access_token_secret=b.args.auth[3])
+        except:
+            try:
+                if b.args.noauth: raise Exception('Not autenticating')
+                from RLT.authentication import TwitterOauth 
+                b.api=TwitterOauth().get_api()
+            except Exception, e:
+                b.api=twitter.Api()
+
+if __name__ == "__main__": MainApp()

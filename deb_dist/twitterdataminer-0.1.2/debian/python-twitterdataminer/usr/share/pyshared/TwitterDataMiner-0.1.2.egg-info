@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: TwitterDataMiner
+Version: 0.1.2
+Summary: Twitter data mining scripts 
+Home-page: http://github.com/Ibercivis/TwitterDataMining
+Author: David Francos Cuartero (XayOn)
+Author-email: xayon@xayon.net
+License: GPL2+
+Download-URL: https://github.com/Ibercivis/Furnivall/downloads
+Description: Twitter data mining scripts, able to save into mysql, sqlite, or json format
+Platform: all
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Requires: MySQL_python
+Requires: argparse
+Requires: python_twitter

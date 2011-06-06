@@ -1,0 +1,8 @@
+pyversions=2.6
+
+/usr/share/pyshared/RLT/__init__.py
+/usr/share/pyshared/RLT/authentication.py
+/usr/share/pyshared/RLT/datasources.py
+/usr/share/pyshared/RLT/interfaces.py
+/usr/share/pyshared/RLT/processors.py
+/usr/share/pyshared/TwitterDataMiner-0.1.2.egg-info

@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Mon, 06 Jun 2011 15:03:20 +0200
+Source: twitterdataminer
+Binary: python-twitterdataminer
+Architecture: source all
+Version: 0.1.2-1
+Distribution: unstable
+Urgency: low
+Maintainer: David Francos Cuartero (XayOn) <xayon@xayon.net>
+Changed-By: David Francos Cuartero (XayOn) <xayon@xayon.net>
+Description: 
+ python-twitterdataminer - Twitter data mining scripts
+Changes: 
+ twitterdataminer (0.1.2-1) unstable; urgency=low
+ .
+   * source package automatically created by stdeb 0.6.0
+Checksums-Sha1: 
+ 0657d67a2294faa8f1f95598951d868d82f496a1 835 twitterdataminer_0.1.2-1.dsc
+ 9e3a391ced42577b03556622e4fdef166b36ff2d 7395 twitterdataminer_0.1.2.orig.tar.gz
+ 036dd63e3f8cde1287647b21709ce59ae2ca09bb 1064 twitterdataminer_0.1.2-1.diff.gz
+ 3899e6f9eddc6dcd48c9b889dee695d6014f79c9 7546 python-twitterdataminer_0.1.2-1_all.deb
+Checksums-Sha256: 
+ a7adaba517136ace722a2b3d9b794a118a6649e6933cb6e91a8e795b2b4fffdf 835 twitterdataminer_0.1.2-1.dsc
+ 7a356e86fa7bde5176485815296ea6cc45c0c2edc1ab79d843368e803b090b6b 7395 twitterdataminer_0.1.2.orig.tar.gz
+ 5470d8b03f53fefc27bf7e8eb717b882b70071db1a51eaa8ca5a65b521c66a7d 1064 twitterdataminer_0.1.2-1.diff.gz
+ 22b8e271d0a255bce66f93622dd060427c307f4065ce8fa991605e36dd9ac89e 7546 python-twitterdataminer_0.1.2-1_all.deb
+Files: 
+ 09f89e43f0fa10bfc9409a7335904901 835 python optional twitterdataminer_0.1.2-1.dsc
+ 336066e1625403a2253faeb022cafe7c 7395 python optional twitterdataminer_0.1.2.orig.tar.gz
+ 6cb5202dbf46f2536e023eb57c4af595 1064 python optional twitterdataminer_0.1.2-1.diff.gz
+ 98aa21917ebf3b1f03aab1bf80bf9020 7546 python optional python-twitterdataminer_0.1.2-1_all.deb
