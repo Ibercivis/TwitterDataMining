@@ -28,10 +28,10 @@ opts = {
 
 setup(name='TwitterDataMiner',
       version='0.1',
-      description='Python default wireless dictionary generators',
+      description='Twitter data mining scripts ',
       author='David Francos Cuartero (XayOn)',
       console = [{"script": "TwitterDataMiner" }],
-      author_email='xayon@davidfrancos.net',
+      author_email='xayon@xayon.net',
       url='http://github.com/Ibercivis/TwitterDataMiner',
       packages=['RLT'],
       scripts=scripts,
