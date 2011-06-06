@@ -1,4 +1,0 @@
-{%extends ../Templates/base.html%}
-{%block content %}
-{{ content }}
-{% end %}

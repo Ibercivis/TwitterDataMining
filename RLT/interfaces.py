@@ -1,17 +1,6 @@
 #!/usr/bin/env python 
 # -*- coding: UTF-8 -*-
 import argparse
-import tornado.web
-"""
-    Class file for TwitterAnalizer got from RealTimeTwitter.
-    TODO Things:
-        Make nice web interfaces.
-        Allow it to connect with twitter (in progress)
-        To make a bunch of online IDs to stickers
-            Get user lists
-            Get followers
-            Get followings.
-"""
 
 class CLIArgumentParser(object):
     def parse(self):
@@ -28,7 +17,6 @@ class CLIArgumentParser(object):
         self.parser.add_argument('--read_file', dest='read_file',  help='Get tweets from this file in json format.', default=False)
         self.parser.add_argument('--external_users', dest='external_users',  help='Get usernames from this file in csv format.', default=False)
         # Main options
-        self.parser.add_argument('--server', dest='server',  action="store_true", help='launch server', default=False)
         self.parser.add_argument('--title', default="Real Life twitter", dest='title',  help='specify title')
         self.parser.add_argument('--timeout', dest='timeout',  help='End the bucle after X seconds', default=False)
         # Auth options
@@ -42,44 +30,3 @@ class CLIArgumentParser(object):
         self.parser.add_argument('--enable_mysql', dest='mysql',  help='Save data in mysql database. Requires info', default=False)
         self.parser.add_argument('--get_json', dest='get_json', action="store_true", help='Return json instead of html', default=False)
         self.args = self.parser.parse_args()
-
-class TornadoRequestHandler(object):
-    class RequestHandler(tornado.web.RequestHandler):
-        def get(self, slug="MainPage"):
-            content=""
-            args=self.get_arguments_(self.settings['args'])
-            a=self.settings['a']
-            if args.hashtag or args.get_user_info or args.user:
-                args.timeout=False
-                a.args=args
-                a.tweets=[]
-                a.users=[]
-                a.finished=False
-                if slug is not "MainPage":
-                    loop=a.loop(True)
-                    if slug is not "json" and not args.get_json:
-                        content=loop[0]
-                    else:
-                        content=loop[1]
-            return self.render('../Templates/%s' %slug, title=args.title, content=content)
-
-        def get_arguments_(self, args):
-            auth, get_user_info, hashtag, usernames = (False, False, False, False)
-
-            try: auth=self.get_argument('auth')
-            except: pass
-            try: get_user_info=self.get_argument('get_user_info')
-            except: pass
-            try: hashtag=self.get_argument('hashtags').split(',')
-            except: pass
-            try: usernames=self.get_argument('usernames').split(',')
-            except: pass
-
-            if auth: args.auth=auth
-            if get_user_info: args.get_user_info=get_user_info
-            if hashtag: args.hashtag=hashtag
-            if not args.external_users:
-                if usernames: args.user=usernames
-            else:
-                args.user=a.get_external_usernames()
-            return args

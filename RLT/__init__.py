@@ -1,1 +1,1 @@
-__all__=['twitter', 'processors', 'main']
+__all__=['twitter', 'processors', 'main', 'datasources', 'interfaces', 'authentication']
