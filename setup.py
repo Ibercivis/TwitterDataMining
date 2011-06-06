@@ -28,6 +28,16 @@ opts = {
 
 setup(name='TwitterDataMiner',
       version='0.1',
+      download_url='',
+      platforms=['all'],
+      long_description='Twitter data mining scripts, able to save into mysql, sqlite, or json format',
+      license='GPL2+',
+      classifiers=[
+          'Development Status :: 4 - Beta',
+          'Environment :: Console',
+      ],
+      mantainer='David Francos Cuartero (XayOn)',
+      mantainer_email='xayon@xayon.net',
       description='Twitter data mining scripts ',
       author='David Francos Cuartero (XayOn)',
       console = [{"script": "TwitterDataMiner" }],
