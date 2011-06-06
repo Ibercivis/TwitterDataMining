@@ -27,9 +27,9 @@ opts = {
     }
 
 setup(name='TwitterDataMiner',
-      version='0.1',
+      version='0.1.1',
       download_url='https://github.com/Ibercivis/Furnivall/downloads',
-      requires=['MySQL-python','argparse'],
+      requires=['MySQL_python','argparse', 'python_twitter'],
       platforms=['all'],
       long_description='Twitter data mining scripts, able to save into mysql, sqlite, or json format',
       license='GPL2+',
