@@ -1,4 +1,5 @@
 TwitterDataMiner
+TwitterDataMinerHelper
 setup.py
 RLT/__init__.py
 RLT/authentication.py
