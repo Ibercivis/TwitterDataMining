@@ -3,7 +3,7 @@ Real life twitter
 
 Uso
 ====
-git clone https://github.com/Ibercivis/TwitterDataMiner
+git clone https://github.com/Ibercivis/TwitterDataMining
 python setup.py install
 TwitterDataMiner --help
 
@@ -16,7 +16,7 @@ python 2.6 - 2.7 (no probado con otras versiones de python, puedes probar a util
 
 Usage
 ======
-git clone https://github.com/Ibercivis/TwitterDataMiner
+git clone https://github.com/Ibercivis/TwitterDataMining
 python setup.py install
 TwitterDataMiner --help
 
