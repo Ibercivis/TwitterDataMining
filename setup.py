@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # Got from Digenpy's setup.py (http://github.com/XayOn/Digenpy)
 from distutils.core import setup
-import sys, os, shutil
+import os, shutil
 
 scripts=['TwitterDataMiner', 'TwitterDataMinerHelper' ]
 if os.name is not "posix":
     if os.name is "nt":
         import py2exe
     shutil.copyfile('TwitterDataMiner','TwitterDataMiner.py')
-    scripts=['TwitterDataMiner']
+    scripts=['TwitterDataMiner', 'TwitterDataMinerHelper']
 opts = {
     "py2exe": {
         'includes': '',
