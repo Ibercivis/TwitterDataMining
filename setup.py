@@ -7,11 +7,8 @@ scripts=['TwitterDataMiner', 'TwitterDataMinerHelper' ]
 if os.name is not "posix":
     if os.name is "nt":
         import py2exe
-    shutil.copyfile('digenpy','digenpy.py')
-    shutil.copyfile('digenpy-gtk','digenpy-gtk.py')
-    shutil.copyfile('digenpy-gtk','digenpy-gtk.py')
-    scripts=['digenpy.py', 'digenpy-gtk.py']
-
+    shutil.copyfile('TwitterDataMiner','TwitterDataMiner.py')
+    scripts=['TwitterDataMiner']
 opts = {
     "py2exe": {
         'includes': '',
