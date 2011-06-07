@@ -59,7 +59,7 @@ main(){
                 get_names
                 TwitterDataMiner --destfile DataMiningFromMysql  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db # Note: You can delete desfile and save_file
             done 
-            sleep 900 # Sleep 10m foreach 10 users. This way we won't reach the limits
+            sleep 900 # Sleep 15m foreach 10 users. This way we won't reach the limits
         done
         sleep $[$RANDOM % 64]; # More random sleeping! (just a little, at most a minute)
     done
