@@ -175,12 +175,16 @@ class ResultsGenerator(object):
                 except Exception, e:
                     print e
                     pass
-
-                for follower_id in user_[1]['ids']:
-                    myfollowers.append([user_[0]['id'], follower_id])
-    
-                for friend_id in user_[2]['ids']:
-                    myfriends.append([friend_id, user_[0]['id']])
+                try:
+                    for follower_id in user_[1]['ids']:
+                        myfollowers.append([user_[0]['id'], follower_id])
+                except:
+                    print user_[0]
+                try:
+                    for friend_id in user_[2]['ids']:
+                        myfriends.append([friend_id, user_[0]['id']])
+                except:
+                    print user_[0]
 
         return (myusers, myfollowers, myfriends)
 
