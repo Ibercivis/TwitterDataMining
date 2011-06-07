@@ -43,21 +43,24 @@ get_ip(){ awk '/inet addr/ {print substr($2, 6)}' <<< "$($ifconfig $iface)"; } #
 execute_mysql_query(){ $mysql $(get_mysql_opts) -N $db <<< "${1}" ; }
 set_myself_in_database(){ execute_mysql_query "update $table set task_host='$1', task_status=1 where task_status=0 limit $limit"; }
 get_from_database(){ execute_mysql_query "select name from $table where task_host='$1' and task_status=1"; }
+get_names(){ csv="$(get_from_database ${ip})"; echo $csv | sed "s/ /,/g" >> $ip.csv ; }
 
 ip=$(get_ip)
 getoptions "${@}"
 
 main(){
     echo "Connecting to $mysql_host with user $mysql_user and limit $limit for ip $ip and password $mysql_password"
-    set_myself_in_database $ip
-    csv="$(get_from_database ${ip})"
-    echo $csv | sed "s/ /,/g" >> $ip.csv
+    sleep $[$RANDOM/128];
+    for i in `seq 1 3`; do
+        for i in `seq 1 10`; do
+            rm $ip.csv;
+            set_myself_in_database $ip
+            get_names
+            TwitterDataMiner --destfile DataMiningFromMysql  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db # Note: You can delete desfile and save_file
+        done 
+        sleep 150;
+	sleep $[$RANDOM/64]; # Sleep 10m foreach 10 users. This way we won't reach the limits
+    done
 }
 
-[[ $debug ]] && { [[ $log ]] && main &> $log || main ; } || main &>/dev/null 
-for i in `seq 1 3`; do
-    for i in `seq 1 10`; do
-        rm $ip.csv; python RealLifeTweeter.py --destfile foo  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db # Note: You can delete desfile and save_file
-    done 
-    sleep 600 # Sleep 10m foreach 10 users. This way we won't reach the limits
-done
+{ cd `mktemp -d`; [[ $debug ]] && { [[ $log ]] && main &> $log || main ; } || main &>/dev/null;  } &
