@@ -1,7 +1,7 @@
 #!/bin/bash 
 mysql=/usr/bin/mysql; ifconfig=/sbin/ifconfig; iface=eth0; mysql_password="root"; mysql_host="localhost"; mysql_user="root"; limit=1; db="smmart_20"; table="tw_user"
 debug=1
-log=foo.log
+log=TDM.log
 getoptions(){
     while getopts "hi:t:d:p:x:u:l:" OPTION; do 
         case "$OPTION" in
@@ -49,15 +49,19 @@ ip=$(get_ip)
 getoptions "${@}"
 
 main(){
-    echo "Connecting to $mysql_host with user $mysql_user and limit $limit for ip $ip and password $mysql_password"
-    for i in `seq 1 3`; do
-        for i in `seq 1 10`; do
-            rm $ip.csv;
-            set_myself_in_database $ip
-            get_names
-            TwitterDataMiner --destfile DataMiningFromMysql  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db # Note: You can delete desfile and save_file
-        done 
-        sleep 600 # Sleep 10m foreach 10 users. This way we won't reach the limits
+    while [ "1" ]; do
+        echo "Connecting to $mysql_host with user $mysql_user and limit $limit for ip $ip and password $mysql_password"
+        sleep $[$RANDOM % 200 ]; # Sleep for aleatory startup
+        for i in `seq 1 4`; do
+            for i in `seq 1 10`; do
+                rm $ip.csv;
+                set_myself_in_database $ip
+                get_names
+                TwitterDataMiner --destfile DataMiningFromMysql  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db # Note: You can delete desfile and save_file
+            done 
+            sleep 900 # Sleep 10m foreach 10 users. This way we won't reach the limits
+        done
+        sleep $[$RANDOM % 64]; # More random sleeping! (just a little, at most a minute)
     done
 }
 
