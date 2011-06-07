@@ -180,7 +180,7 @@ class ResultsGenerator(object):
                     myfollowers.append([user_[0]['id'], follower_id])
     
                 for friend_id in user_[2]['ids']:
-                    myfriends.append(friend_id, [user_[0]['id'])
+                    myfriends.append([friend_id, user_[0]['id']])
 
         return (myusers, myfollowers, myfriends)
 
