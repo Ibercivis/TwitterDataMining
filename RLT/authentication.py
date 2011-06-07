@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import os
-import sys
 from twitter import Api
 import oauth2 as oauth
 

@@ -1,7 +1,6 @@
 #!/usr/bin/python2.7
 # -*- coding: UTF-8 -*-
 import time
-import os
 import twitter 
 import types
 from RLT.datasources import twitterParser as Parser
@@ -10,7 +9,8 @@ from RLT.interfaces import CLIArgumentParser as Interface
 from RLT.processors import ResultsGenerator as Processor
 
 debug=False
-if debug: import pprint
+if debug: 
+    import pprint
 
 class main(Interface, Processor, Parser, FileParser):
     def __init__(self):
@@ -58,11 +58,11 @@ class MainApp(object):
         self.a=main()
         self.assign_api(self.a)
         if self.a.args.external_users: self.a.args.user=self.a.get_external_usernames()
-        self.a.loop(True)
+        print self.a.loop(True)
+        if debug: pprint.pprint(self.a.loop)
 
     def assign_api(self, b):
         try:
-            c=b.args.auth[1]
             b.api = twitter.Api(consumer_key=b.args.auth[0], consumer_secret=b.args.auth[1], access_token_key=b.args.auth[2], access_token_secret=b.args.auth[3])
         except:
             try:
@@ -70,6 +70,7 @@ class MainApp(object):
                 from RLT.authentication import TwitterOauth 
                 b.api=TwitterOauth().get_api()
             except Exception, e:
+                print e
                 b.api=twitter.Api()
 
 if __name__ == "__main__": MainApp()
