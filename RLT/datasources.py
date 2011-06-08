@@ -28,7 +28,7 @@ class twitterParser(object):
                 user=self.api.GetUser(user.strip())
                 self.users.append( { user.id : [ user.AsDict(), self.api.GetFollowerIDs(user.id) , self.api.GetFriendIDs(user.id) ]} )
             except Exception, e:
-                if "Limit" in e:
+                if "Rate limit" in e:
                     import time
                     print "Exception: %s\nSleeping an hour" %e
                     time.sleep(3600)
