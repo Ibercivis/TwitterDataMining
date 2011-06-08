@@ -25,7 +25,7 @@ opts = {
         }
 
 setup(name='TwitterDataMiner',
-      version='0.1.8',
+      version='0.1.9',
       download_url='https://github.com/Ibercivis/TwitterDataMining/downloads',
       requires=['MySQL_python', 'argparse', 'python_twitter'],
       platforms=['all'],
