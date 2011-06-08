@@ -53,6 +53,9 @@ class SQLiteExporter(Result):
 
 class MYSQLExporter(Result):
     def result(self, return_mysql=False, obj=False):
+        """
+            TODO: create tables if not exists.
+        """
         if not self.args.mysql: return
         import MySQLdb
         query=[ "update tw_user set tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\' where  name=\'%s\'" ,
@@ -61,27 +64,28 @@ class MYSQLExporter(Result):
                 ]
         mysql=self.args.mysql.split(',') 
         try:
-            self.sqlconn= MySQLdb.connect (host = mysql[0], user = mysql[1], passwd = mysql[2], db = mysql[3])
+            self.sqlconn=MySQLdb.connect(host = mysql[0], user = mysql[1], passwd = mysql[2], db = mysql[3])
         except Exception, e:
             print "Not saving to mysql database: %s" %e
         return [ [ self.save(query[o], b) for b in i ] for o, i  in enumerate(obj)]
 
-    def save(self, query, args):
+    def save(self, query, args, status=True):
         try:
+            print "[DEBUG] Executing query:"
             print(query %tuple(args))
             self.sqlconn.cursor().execute(query %tuple(args))
             print "Query written"
         except Exception, e:
-            print e
-            print "Probably something failed connecting to db"
-            pass
+            status=False
+            print "[ERROR] Probably something failed connecting to db %s" %e
         try:
             with open(self.get_filename() + '.mysql', 'a') as file_:
                 file_.write(query %tuple(args))
                 file_.write('\n')
-        except:
-            pass
-        return
+        except Exception, e:
+            status=False
+            print "[ERROR] Somethign failed writing file: %s" %e
+        return status
 
 class HTMLExporter(Result):
     def result(self, return_html=False, obj=False):
@@ -120,8 +124,6 @@ def get_ip_address(ifname):
         struct.pack('256s', ifname[:15])
     )[20:24])
 
-
-
 class ResultsGenerator(object):
     """
         Generates result both in html, txt, sql and prints (if debug enabled) output to console.
@@ -142,7 +144,7 @@ class ResultsGenerator(object):
         
                 try:
                     (geo_lat, geo_long)=user_[0]['status']['geo'].split(',')
-                    print "Lat, long: %s,%s" %(geo_lat, geo_long)
+                    print "[DEBUG] Lat, long: %s,%s" %(geo_lat, geo_long)
                 except:
                     geo_lat=-1
                     geo_long=-1
@@ -150,14 +152,18 @@ class ResultsGenerator(object):
                 try:
                     dt=user_[0]['created_at']
                 except Exception, e:
-                    print "DATE ERROR: %s" %e
+                    print "[WARN] DATE ERROR: %s" %e
                     dt=""
 
                 try:
                     location=user_[0]['location'] 
                     print location
                 except:
-                    location=""
+                    print "[WARN] Location encoding error"
+                    try:
+                        location=user_[0]['location'].encode('utf-8', errors='replace')
+                    except:
+                        location=""
 
                 try:
                     screen_name=user_[0]['screen_name']
@@ -166,7 +172,7 @@ class ResultsGenerator(object):
                     try:
                         screen_name=user_[0]['screen_name'].encode('utf-8', errors='replace')
                     except:
-                        screen_name=Failed
+                        screen_name="Failed"
 
                 try:
                     myusers.append( [ user_[0]['id'],  2, self.host, dt, user_[0]['statuses_count'],
@@ -181,11 +187,14 @@ class ResultsGenerator(object):
                         myfollowers.append([user_[0]['id'], follower_id])
                 except:
                     print user_[0]
+                    pass
+
                 try:
                     for friend_id in user_[2]['ids']:
                         myfriends.append([friend_id, user_[0]['id']])
                 except:
                     print user_[0]
+                    pass
 
         return (myusers, myfollowers, myfriends)
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 # -*- coding: UTF-8 -*-
+import json
 
 class fileParser(object):
-
     def get_by_file(self, file_):
         with open(file_) as f:
             json.loads(f.read())
