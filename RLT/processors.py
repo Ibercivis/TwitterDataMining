@@ -74,6 +74,7 @@ class MYSQLExporter(Result):
             print "[DEBUG] Executing query:"
             print(query %tuple(args))
             self.sqlconn.cursor().execute(query %tuple(args))
+            self.sqlconn.commit()
             print "Query written"
         except Exception, e:
             status=False
