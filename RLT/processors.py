@@ -176,7 +176,7 @@ class ResultsGenerator(object):
                         screen_name="Failed"
 
                 try:
-                    myusers.append( [ user_[0]['id'],  2, self.host, dt, user_[0]['statuses_count'],
+                    myusers.append( [ user_[0]['id'],  12, self.host, dt, user_[0]['statuses_count'],
                           user_[0]['friends_count'], user_[0]['followers_count'], 
                           geo_lat, geo_long, location, screen_name 
                           ] )
