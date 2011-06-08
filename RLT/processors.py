@@ -70,6 +70,7 @@ class MYSQLExporter(Result):
         try:
             print(query %tuple(args))
             self.sqlconn.cursor().execute(query %tuple(args))
+            print "Query written"
         except Exception, e:
             print e
             print "Probably something failed connecting to db"
