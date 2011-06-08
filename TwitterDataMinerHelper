@@ -53,7 +53,7 @@ main(){
         echo "Connecting to $mysql_host with user $mysql_user and limit $limit for ip $ip and password $mysql_password"
         sleep $[$RANDOM % 200 ]; # Sleep for aleatory startup
         for i in `seq 1 4`; do
-            for i in `seq 1 10`; do
+            for i in `seq 1 20`; do
                 rm $ip.csv;
                 set_myself_in_database $ip
                 get_from_database ${ip}
