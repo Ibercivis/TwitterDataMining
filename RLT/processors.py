@@ -58,48 +58,51 @@ class MYSQLExporter(Result):
         """
         if not self.args.mysql: return
         import MySQLdb
-        query=[ #"update tw_user set tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\' where  name=\'%s\'" ,
+        query=[ "update tw_user set tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\' where  name=\'%s\'" ,
                 "Insert into tw_userfollower (user_tw_id, follower) values (%s,%s)",
                 "Insert into tw_frienduser (friend, user_tw_id) values (%s,%s)"
                 ]
         mysql=self.args.mysql.split(',') 
+
         try:
             self.sqlconn=MySQLdb.connect(host = mysql[0], user = mysql[1], passwd = mysql[2], db = mysql[3])
         except Exception, e:
             print "Not saving to mysql database: %s" %e
+
         return [ [ self.save(query[o], b) for b in i ] for o, i  in enumerate(obj)]
 
     def save(self, query, args, status=True):
         try:
-            print "[DEBUG] Executing query:"
-            print(query %tuple(args))
+            logging.info('Executing query %s' %(args))
             self.sqlconn.cursor().execute(query %tuple(args))
             self.sqlconn.commit()
-            print "Query written"
+
         except Exception, e:
             status=False
-            print "[ERROR] Probably something failed connecting to db %s" %e
+            logging.info("[ERROR] Probably something failed connecting to db %s" %e)
         try:
             with open(self.get_filename() + '.mysql', 'a') as file_:
                 file_.write(query %tuple(args))
                 file_.write('\n')
         except Exception, e:
             status=False
-            print "[ERROR] Somethign failed writing file: %s" %e
+            logging.info("[ERROR] Somethign failed writing file: %s" %e)
         return status
 
 class HTMLExporter(Result):
     def result(self, return_html=False, obj=False):
         html="<table class='sample'><tbody>%s</tbody></table>" %(self.table(obj))
-
+        
         if self.args.save_file:
             with codecs.open(self.get_filename() + '.html','w','utf-8') as page_:
                 page_.write(html.encode('ascii','ignore'))
 
         if return_html:
+            logging.info('Returning html')
             return html
 
     def table(self, object_, j=0, a=""):
+        logging.info('Creating table')
         for i in [tuple(object_[i:i+2]) for i in xrange(0,len(object_),2)]:
             if j == 6: 
                 a+="</tbody></table><table class='sample'><tbody>"
@@ -153,14 +156,14 @@ class ResultsGenerator(object):
                 try:
                     dt=user_[0]['created_at']
                 except Exception, e:
-                    print "[WARN] DATE ERROR: %s" %e
+                    logging.info('Date error')
                     dt=""
 
                 try:
                     location=user_[0]['location'] 
-                    print location
+                    logging.info(location)
                 except:
-                    print "[WARN] Location encoding error"
+                    logging.info("Warning. Location encoding error")
                     try:
                         location=user_[0]['location'].encode('utf-8', errors='replace')
                     except:
@@ -168,7 +171,7 @@ class ResultsGenerator(object):
 
                 try:
                     screen_name=user_[0]['screen_name']
-                    print user_[0]['screen_name']
+                    logging.info(user_[0]['screen_name'])
                 except:
                     try:
                         screen_name=user_[0]['screen_name'].encode('utf-8', errors='replace')
@@ -181,25 +184,23 @@ class ResultsGenerator(object):
                           geo_lat, geo_long, location, screen_name 
                           ] )
                 except Exception, e:
-                    print e
+                    logging.info(e)
                     pass
                 try:
                     for follower_id in user_[1]['ids']:
                         myfollowers.append([user_[0]['id'], follower_id])
                 except:
-                    print user_[0]
+                    logging.info(user_[0])
                     pass
 
                 try:
                     for friend_id in user_[2]['ids']:
                         myfriends.append([friend_id, user_[0]['id']])
                 except:
-                    print user_[0]
+                    loggin.info(user_[0])
                     pass
 
-        #return (myusers, myfollowers, myfriends)
-        return (myfollowers, myfriends)
-        #return (myusers,)
+        return (myusers, myfollowers, myfriends)
 
     def process_data(self, get_html=False, obj=False):
         if not obj:

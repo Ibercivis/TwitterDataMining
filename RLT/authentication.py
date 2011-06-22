@@ -23,12 +23,7 @@ class TwitterOauth(object):
         self.resp, self.content = self.oauth_client.request(self.REQUEST_TOKEN_URL, 'GET')
         self.request_token = dict(parse_qsl(self.content))
 
-        print ''
-        print 'Please visit this Twitter page and retrieve the pincode to be used'
-        print 'in the next step to obtaining an Authentication Token:'
-        print ''
-        print '%s?oauth_token=%s' % (self.AUTHORIZATION_URL, self.request_token['oauth_token'])
-        print ''
+        print 'Open: %s?oauth_token=%s' % (self.AUTHORIZATION_URL, self.request_token['oauth_token'])
 
         self.pincode = raw_input('Pincode? ')
 
