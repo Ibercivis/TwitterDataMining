@@ -58,7 +58,11 @@ class MYSQLExporter(Result):
         """
         if not self.args.mysql: return
         import MySQLdb
-        query=[ "update tw_user set tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\' where  name=\'%s\'" ,
+        if len(obj[0] > 1):
+            aq= "update tw_user set tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\' where  name=\'%s\'" ,
+        else:
+            aq="update tw_user set tw_id=\'%s\', task_status=1 where name=\'%s\'"
+        query=[ aq,
                 "Insert into tw_userfollower (user_tw_id, follower) values (%s,%s)",
                 "Insert into tw_frienduser (friend, user_tw_id) values (%s,%s)"
                 ]
@@ -73,20 +77,20 @@ class MYSQLExporter(Result):
 
     def save(self, query, args, status=True):
         try:
-            logging.info('Executing query %s' %(args))
+            print('Executing query %s' %(args))
             self.sqlconn.cursor().execute(query %tuple(args))
             self.sqlconn.commit()
 
         except Exception, e:
             status=False
-            logging.info("[ERROR] Probably something failed connecting to db %s" %e)
+            print("[ERROR] Probably something failed connecting to db %s" %e)
         try:
             with open(self.get_filename() + '.mysql', 'a') as file_:
                 file_.write(query %tuple(args))
                 file_.write('\n')
         except Exception, e:
             status=False
-            logging.info("[ERROR] Somethign failed writing file: %s" %e)
+            print("[ERROR] Somethign failed writing file: %s" %e)
         return status
 
 class HTMLExporter(Result):
@@ -98,11 +102,11 @@ class HTMLExporter(Result):
                 page_.write(html.encode('ascii','ignore'))
 
         if return_html:
-            logging.info('Returning html')
+            print('Returning html')
             return html
 
     def table(self, object_, j=0, a=""):
-        logging.info('Creating table')
+        print('Creating table')
         for i in [tuple(object_[i:i+2]) for i in xrange(0,len(object_),2)]:
             if j == 6: 
                 a+="</tbody></table><table class='sample'><tbody>"
@@ -144,61 +148,61 @@ class ResultsGenerator(object):
         self.host=get_ip_address('eth0')
         for users_ in users:
             for user_ in users_:
+                id_=user_
                 user_=users_[user_]
-        
-                try:
-                    (geo_lat, geo_long)=user_[0]['status']['geo'].split(',')
-                    print "[DEBUG] Lat, long: %s,%s" %(geo_lat, geo_long)
-                except:
-                    geo_lat=-1
-                    geo_long=-1
-
-                try:
-                    dt=user_[0]['created_at']
-                except Exception, e:
-                    logging.info('Date error')
-                    dt=""
-
-                try:
-                    location=user_[0]['location'] 
-                    logging.info(location)
-                except:
-                    logging.info("Warning. Location encoding error")
+                if self.args.get_only_ff: 
                     try:
-                        location=user_[0]['location'].encode('utf-8', errors='replace')
+                        (geo_lat, geo_long)=user_[0]['status']['geo'].split(',')
+                        print "[DEBUG] Lat, long: %s,%s" %(geo_lat, geo_long)
                     except:
-                        location=""
+                        geo_lat=-1
+                        geo_long=-1
 
-                try:
-                    screen_name=user_[0]['screen_name']
-                    logging.info(user_[0]['screen_name'])
-                except:
                     try:
-                        screen_name=user_[0]['screen_name'].encode('utf-8', errors='replace')
-                    except:
-                        screen_name="Failed"
+                        dt=user_[0]['created_at']
+                    except Exception, e:
+                        print('Date error')
+                        dt=""
 
-                try:
-                    myusers.append( [ user_[0]['id'],  12, self.host, dt, user_[0]['statuses_count'],
-                          user_[0]['friends_count'], user_[0]['followers_count'], 
-                          geo_lat, geo_long, location, screen_name 
-                          ] )
-                except Exception, e:
-                    logging.info(e)
-                    pass
+                    try:
+                        location=user_[0]['location'] 
+                        print(location)
+                    except:
+                        print("Warning. Location encoding error")
+                        try:
+                            location=user_[0]['location'].encode('utf-8', errors='replace')
+                        except:
+                            location=""
+
+                    try:
+                        screen_name=user_[0]['screen_name']
+                        print(user_[0]['screen_name'])
+                    except:
+                        try:
+                            screen_name=user_[0]['screen_name'].encode('utf-8', errors='replace')
+                        except:
+                            screen_name="Failed"
+    
+                    try:
+                        myusers.append( [ user_[0]['id'],  12, self.host, dt, user_[0]['statuses_count'],
+                              user_[0]['friends_count'], user_[0]['followers_count'], 
+                              geo_lat, geo_long, location, screen_name 
+                              ] )
+                    except Exception, e:
+                        print(e)
+                        pass
+
                 try:
                     for follower_id in user_[1]['ids']:
-                        myfollowers.append([user_[0]['id'], follower_id])
-                except:
-                    logging.info(user_[0])
-                    pass
+                        myfollowers.append([id_, follower_id])
+                except Exception, e:
+                    print(e)
 
                 try:
                     for friend_id in user_[2]['ids']:
-                        myfriends.append([friend_id, user_[0]['id']])
-                except:
-                    loggin.info(user_[0])
-                    pass
+                        myfriends.append([id_, user_[0]['id']])
+                except Exception, e:
+                    print(e)
 
         return (myusers, myfollowers, myfriends)
 

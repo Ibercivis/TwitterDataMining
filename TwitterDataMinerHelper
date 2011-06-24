@@ -42,7 +42,7 @@ get_mysql_opts(){
 get_ip(){ $ifconfig $iface|awk '/inet addr/ {print substr($2, 6)}' ; }
 execute_mysql_query(){ echo $1| $mysql $(get_mysql_opts) -N $db ; }
 set_myself_in_database(){ execute_mysql_query "update $table set task_host='$1', task_status=1 where task_status=0 limit $limit"; }
-get_from_database(){ execute_mysql_query "select name from $table where task_host='$1' and task_status=1"; }
+get_from_database(){ execute_mysql_query "select name from $table where task_host='$1' and task_status=1 limit $limit"; }
 get_names(){ csv="$(get_from_database ${ip})"; echo $csv | sed "s/ /,/g" >> $ip.csv ; }
 
 ip=$(get_ip)
@@ -58,11 +58,10 @@ main(){
                 set_myself_in_database $ip
                 get_from_database ${ip}
                 get_names
-                TwitterDataMiner --destfile DataMiningFromMysql  --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db >&2 # Note: You can delete desfile and save_file 
+                TwitterDataMiner --destfile DataMiningFromMysql  --get-only-ff --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db >&2 # Note: You can delete desfile and save_file 
             done 
             sleep 900 # Sleep 15m foreach 10 users. This way we won't reach the limits
         done
-        sleep $[$RANDOM % 64]; # More random sleeping! (just a little, at most a minute)
     done
 }
 

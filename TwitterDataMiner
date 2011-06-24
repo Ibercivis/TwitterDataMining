@@ -43,10 +43,10 @@ class main(Interface, Processor, Parser, FileParser):
             else:
                 # We put a 30 seconds sleep because twitter's api 1 minute caching.
                 self.get_by_hashtag(self.args.hashtag)
-                logging.info("Sleeping 30 seconds")
+                print("Sleeping 30 seconds")
                 time.sleep(30)
                 self.get_by_timeline_array(self.args.user)
-                logging.info("Sleeping 30 seconds")
+                print("Sleeping 30 seconds")
                 time.sleep(30)
 
         if self.exit: return
@@ -57,11 +57,11 @@ class main(Interface, Processor, Parser, FileParser):
 class MainApp(object):
     def __init__(self):
         global a
-        logging.info("Starting main twitter APP")
+        print("Starting main twitter APP")
         self.a=main()
         self.assign_api(self.a)
         if self.a.args.external_users: self.a.args.user=self.a.get_external_usernames()
-        logging.info(self.a.loop(True))
+        print(self.a.loop(True))
         if debug: pprint.pprint(self.a.loop)
 
     def assign_api(self, b):
@@ -72,9 +72,9 @@ class MainApp(object):
                 if b.args.noauth: raise Exception('Not autenticating')
                 from RLT.authentication import TwitterOauth 
                 b.api=TwitterOauth().get_api()
-                logging.info("Using authenticated API")
+                print("Using authenticated API")
             except Exception, e:
-                logging.info("Not using auth API because: %s" %e)
+                print("Not using auth API because: %s" %e)
                 b.api=twitter.Api()
 
 if __name__ == "__main__": MainApp()

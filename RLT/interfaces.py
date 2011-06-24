@@ -12,6 +12,7 @@ class CLIArgumentParser(object):
         self.parser.add_argument('--filter', dest='filter_',  help='filter user-driven search into a specific word', default=False)
         self.parser.add_argument('--since_id', dest='since_id',  help='Get tweets from this id on.', default=False)
         self.parser.add_argument('--dont_parse_weight', action="store_false", dest='parse_weight',  help='Dont bother about tweet\'s weight. AKA let not-retweeted in right now.', default=False)
+        self.parser.add_argument('--get_only_ff', action="store_true", dest='get_only_ff',  help='Do not process user data.', default=False)
         self.parser.add_argument('--max_tweets', dest='count',  help='Get COUNT Tweets.', default=False)
         # Read from file
         self.parser.add_argument('--read_file', dest='read_file',  help='Get tweets from this file in json format.', default=False)
