@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 # -*- coding: UTF-8 -*-
 import time
-import twitter 
+import twitter
 import types
 from RLT.datasources import twitterParser as Parser
 from RLT.datasources import fileParser as FileParser

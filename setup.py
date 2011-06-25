@@ -20,12 +20,12 @@ opts = {
                 "libglib-2.0-0.dll","libgmodule-2.0-0.dll",
                 "libgtk-win32-2.0-0.dll","libpango-1.0-0.dll",
                 "libpangowin32-1.0-0.dll"],
-            'packages': ['RLT'],
+            'packages': ['RLT', 'twitter'],
             }
         }
 
 setup(name='TwitterDataMiner',
-      version='0.2.8',
+      version='0.2.9.9.3',
       download_url='https://github.com/Ibercivis/TwitterDataMining/downloads',
       requires=['MySQL_python', 'argparse', 'python_twitter'],
       platforms=['all'],

@@ -3,9 +3,10 @@ mysql=/usr/bin/mysql; ifconfig=/sbin/ifconfig; iface=eth0; mysql_password="root"
 debug=1
 log=TDM.log
 getoptions(){
-    while getopts "hi:t:d:p:x:u:l:" OPTION; do 
+    while getopts "hi:t:d:p:f:x:u:l:" OPTION; do 
         case "$OPTION" in
             h) usage ;;
+            f) file=$OPTARG;;
             p) export mysql_password="$OPTARG";;
             x) export mysql_host="$OPTARG";;
             u) export mysql_user="$OPTARG";;
@@ -49,6 +50,8 @@ ip=$(get_ip)
 getoptions "${@}"
 
 main(){
+    [[ $file ]] && {
+    for i in "`cat $file`"; do execute_mysql_query "insert into $table (name) values ($i);"; done
     while [ "1" ]; do
         echo "Connecting to $mysql_host with user $mysql_user and limit $limit for ip $ip and password $mysql_password" >&2
         sleep $[$RANDOM % 200 ]; # Sleep for aleatory startup
@@ -58,7 +61,7 @@ main(){
                 set_myself_in_database $ip
                 get_from_database ${ip}
                 get_names
-                TwitterDataMiner --destfile DataMiningFromMysql  --get-only-ff --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db >&2 # Note: You can delete desfile and save_file 
+                TwitterDataMiner --destfile DataMiningFromMysql  --get_only_ff --save_file --user_info --external_users $ip.csv --no-auth --enable_mysql $mysql_host,$mysql_user,$mysql_password,$db >&2 # Note: You can delete desfile and save_file 
             done 
             sleep 900 # Sleep 15m foreach 10 users. This way we won't reach the limits
         done

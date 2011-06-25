@@ -1,4 +1,3 @@
-create table user if not exists (task_status int, task_host int, created_at text, 
-         tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\' where  name=\'%s\'" ,
-                "Insert into tw_userfollower (user_tw_id, follower) values (%s,%s)",
-                "Insert into tw_frienduser (friend, user_tw_id) values (%s,%s)"
+create table user if not exists (tw_id int, task_status int, task_host int, created_at text, statuses_count int, friends_count int, followers_count int, geo_lat text, geo_long text, geo_text text, geo_province text, geo_community text);
+create table if not exists tw_userfollower (user_tw_id int, follower int);
+create table if not exists tw_frienduser (friend int, user_tw_id int);

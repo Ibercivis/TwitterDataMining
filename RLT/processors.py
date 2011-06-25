@@ -58,15 +58,16 @@ class MYSQLExporter(Result):
         """
         if not self.args.mysql: return
         import MySQLdb
-        if len(obj[0] > 1):
+        if self.args.get_only_ff:
+            print "Just updating..."
+            aq="update tw_user set task_status='%s' where tw_id=\'%s\';"
+        else:
             print "Getting user data"
             aq= "update tw_user set tw_id=\'%s\', task_status=\'%s\', task_host=\'%s\', created_at=\'%s\', statuses_count=\'%s\', friend_count=\'%s\', followers_count=\'%s\', geo_lat=\'%s\', geo_long=\'%s\', geo_text=\'%s\' where  name=\'%s\'" ,
-        else:
-            aq="update tw_user set tw_id=\'%s\', task_status=1 where name=\'%s\'"
-        query=[ aq,
-                "Insert into tw_userfollower (user_tw_id, follower) values (%s,%s)",
-                "Insert into tw_frienduser (friend, user_tw_id) values (%s,%s)"
-                ]
+
+        query=[ "Insert into tw_userfollower (user_tw_id, follower) values (%s,%s)",
+                "Insert into tw_frienduser (friend, user_tw_id) values (%s,%s)" ]
+
         mysql=self.args.mysql.split(',') 
 
         try:
@@ -74,11 +75,17 @@ class MYSQLExporter(Result):
         except Exception, e:
             print "Not saving to mysql database: %s" %e
 
+        if self.args.get_only_ff:
+            self.save(aq, [ 2, obj[0][0][0] ])
+            obj=[obj[1], obj[2]]
+            print obj
+        else:
+            self.save(aq, obj[0])
         return [ [ self.save(query[o], b) for b in i ] for o, i  in enumerate(obj)]
 
     def save(self, query, args, status=True):
         try:
-            print('Executing query %s' %(args))
+            print(query %tuple(args))
             self.sqlconn.cursor().execute(query %tuple(args))
             self.sqlconn.commit()
 
@@ -192,6 +199,11 @@ class ResultsGenerator(object):
                     except Exception, e:
                         print(e)
                         pass
+                else:
+                    try:
+                        myusers.append( [ 2, id_ ] )
+                    except Exception, e:
+                        print e
 
                 try:
                     for follower_id in user_[1]['ids']:
@@ -201,7 +213,7 @@ class ResultsGenerator(object):
 
                 try:
                     for friend_id in user_[2]['ids']:
-                        myfriends.append([id_, user_[0]['id']])
+                        myfriends.append([id_, friend_id])
                 except Exception, e:
                     print(e)
 
