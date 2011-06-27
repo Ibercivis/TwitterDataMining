@@ -3,7 +3,7 @@ mysql=/usr/bin/mysql; ifconfig=/sbin/ifconfig; iface=eth0; mysql_password="root"
 debug=1
 log=TDM.log
 getoptions(){
-    while getopts "hi:t:d:p:f:x:u:l:" OPTION; do 
+    while getopts "hi:t:d:p:f:x:u:l:f:" OPTION; do 
         case "$OPTION" in
             h) usage ;;
             f) file=$OPTARG;;
@@ -11,6 +11,7 @@ getoptions(){
             x) export mysql_host="$OPTARG";;
             u) export mysql_user="$OPTARG";;
             i) export iface="$OPTARG";;
+            p) export file="$OPTARG";;
             d) export db="$OPTARG";;
             t) export table="$OPTARG";;
             l) export limit="$OPTARG";;
@@ -27,6 +28,7 @@ $0 [OPTION]
     -i IFACE    network interface to get ip from
     -d DB       database to use
     -t table    table to use
+    -f file     file for import users to database
     -h          show this menu
 EOF
 exit
@@ -50,9 +52,8 @@ ip=$(get_ip)
 getoptions "${@}"
 
 main(){
-    [[ $file ]] && {
-    for i in "`cat $file`"; do execute_mysql_query "insert into $table (name) values ($i);"; done
     while [ "1" ]; do
+        [[ $file ]] && { for i in `cat $file`; do execute_mysql_query "insert into $table ('name') values ('$i');"; done; }  
         echo "Connecting to $mysql_host with user $mysql_user and limit $limit for ip $ip and password $mysql_password" >&2
         sleep $[$RANDOM % 200 ]; # Sleep for aleatory startup
         for i in `seq 1 4`; do
